@@ -1,10 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using Random = System.Random;
-
 public class CubeGenerator : MonoBehaviour
 {
     public Transform SampleCube;
@@ -24,7 +18,6 @@ public class CubeGenerator : MonoBehaviour
     {
         if (_isStart == false)
         {
-
             _isStart = true;
 
             for (int i = 0; i < 10; i++)
@@ -38,14 +31,15 @@ public class CubeGenerator : MonoBehaviour
                     Vector3 localCubeOffset = new Vector3(cubeOffset.x, 0, cubeOffset.z);
                     localCubeOffset.x *= i;
                     localCubeOffset.z *= j;
-                    localCubeOffset.y += UnityEngine.Random.value > .7f ? .5f : 0;
+                    localCubeOffset.y += UnityEngine.Random.value > .9f ? .5f : 0;
 
-                    Debug.Log(localCubeOffset);
+//                    Debug.Log(localCubeOffset);
                     newCube = newCube + localCubeOffset;
 
-                    Instantiate(SampleCube, newCube, Quaternion.identity);
-                }
+                    Transform tr = Instantiate(SampleCube, newCube, Quaternion.identity);
+                    tr.parent = transform;
 
+                }
             }
         }
     }
