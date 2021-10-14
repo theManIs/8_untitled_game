@@ -6,6 +6,10 @@ public class MainCapsulePlayer : MonoBehaviour
     private MeshRenderer _defaultMaterial;
     private Color _defaultColor;
     private PlayerRequestOrder _playerRequestOrder;
+    
+    private ConstantConstraints _constantConstraints;
+    private float _xCell = 1;
+    private float _zCell = 1;
 
     private Vector3 _moveEndPoint;
     private bool _isMovingToEnd = false;
@@ -15,12 +19,16 @@ public class MainCapsulePlayer : MonoBehaviour
     private Vector3 _startCellPosition;
     private bool _hasChangedEndPoint = false;
     private Vector3 _changedEndPoint;
+    private Vector3 _newElevation;
 
-    void Start()
+    public void OnEnable()
     {
         _defaultMaterial = GetComponent<MeshRenderer>();
         _defaultColor = _defaultMaterial.material.color;
         _playerRequestOrder = FindObjectOfType<PlayerRequestOrder>();
+        _constantConstraints = FindObjectOfType<ConstantConstraints>();
+        _xCell = _constantConstraints.OneCell.x;
+        _zCell = _constantConstraints.OneCell.z;
     }
 
     void OnMouseDown()
@@ -46,16 +54,16 @@ public class MainCapsulePlayer : MonoBehaviour
         if (_playerRequestOrder.NewMove)
         {
             _playerRequestOrder.NewMove = false;
-            Vector3 yPos = new Vector3(0, transform.position.y, 0);
+            Vector3 yPos = new Vector3(_playerRequestOrder.MoveToClick.x, transform.position.y, _playerRequestOrder.MoveToClick.z);
 
             if (_moveToNextCell)
             {
-                _changedEndPoint = _playerRequestOrder.MoveToClick + yPos;
+                _changedEndPoint = yPos;
                 _hasChangedEndPoint = true;
             }
             else
             {
-                _moveEndPoint = _playerRequestOrder.MoveToClick + yPos;
+                _moveEndPoint = yPos;
                 _isMovingToEnd = true;
             }
         }
@@ -74,20 +82,20 @@ public class MainCapsulePlayer : MonoBehaviour
             float xDistance = _moveEndPoint.x - transform.position.x;
             float zDistance = _moveEndPoint.z - transform.position.z;
 //            Debug.Log(_moveEndPoint);
-            Debug.Log(xDistance);
+//            Debug.Log(xDistance);
 
             if ((xDistance > .1f || xDistance < -.1f) && (zDistance > .1f || zDistance < -.1f))
             {
-                Debug.Log(xDistance > zDistance);
+//                Debug.Log(xDistance > zDistance);
                 if (xDistance > zDistance)
                 {
-                    _nextCell = transform.position + new Vector3(1.05f * Math.Sign(xDistance), 0, 0);
+                    _nextCell = transform.position + new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
                     _moveToNextCell = true;
 
                 }
                 else
                 {
-                    _nextCell = transform.position + new Vector3(0, 0, 1.05f * Math.Sign(zDistance));
+                    _nextCell = transform.position + new Vector3(0, 0, _zCell * Math.Sign(zDistance));
                     _moveToNextCell = true;
                 }
             }
@@ -95,15 +103,27 @@ public class MainCapsulePlayer : MonoBehaviour
             {
                 if (xDistance > .1f || xDistance < -.1f)
                 {
-                    _nextCell = transform.position + new Vector3(1.05f * Math.Sign(xDistance), 0, 0);
+                    _nextCell = transform.position + new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
                     _moveToNextCell = true;
 
                 }
                 else if (zDistance > .1f || zDistance < -.1f)
                 {
-                    _nextCell = transform.position + new Vector3(0, 0, 1.05f * Math.Sign(zDistance));
+                    _nextCell = transform.position + new Vector3(0, 0, _zCell * Math.Sign(zDistance));
                     _moveToNextCell = true;
                 }
+            }
+
+            Vector3 coordinates = _nextCell + new Vector3(0, 10, 0);
+//            GameObject gm = new GameObject($"coordinates");
+//            gm.transform.position = coordinates;
+
+            if (Physics.Raycast(new Ray(coordinates, Vector3.down), out RaycastHit hitinfo))
+            {
+                Debug.Log(hitinfo.point);
+                MeshRenderer mr = GetComponent<MeshRenderer>();
+
+                _newElevation = new Vector3(0, hitinfo.point.y - transform.position.y + 1, 0);
             }
 
             _startCellPosition = transform.position;
@@ -118,19 +138,22 @@ public class MainCapsulePlayer : MonoBehaviour
 //            if (Vector3.Distance(_nextCell, transform.position) < 0.1f)
             if (_nextCell == transform.position)
             {
+                Debug.Log(_newElevation);
+//                transform.position = _nextCell + _newElevation;
+                transform.position = _nextCell;
+
                 if (Vector3.Distance(_moveEndPoint, transform.position) < 0.1f)
                 {
-                    transform.position = _nextCell;
-                    _moveToNextCell = false;
                     _nextCell = Vector3.zero;
                     _moveEndPoint = Vector3.zero;
+                    _moveToNextCell = false;
                 }
                 else
                 {
-                    transform.position = _nextCell;
                     _isMovingToEnd = true;
                 }
 
+                _newElevation = Vector3.zero;
                 _deltaSum = 0f;
             }
         }
