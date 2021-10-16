@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MainCapsulePlayer : MonoBehaviour
@@ -20,6 +21,7 @@ public class MainCapsulePlayer : MonoBehaviour
     private bool _hasChangedEndPoint = false;
     private Vector3 _changedEndPoint;
     private Vector3 _newElevation;
+    private Bounds _meshBounds;
 
     public void OnEnable()
     {
@@ -29,6 +31,7 @@ public class MainCapsulePlayer : MonoBehaviour
         _constantConstraints = FindObjectOfType<ConstantConstraints>();
         _xCell = _constantConstraints.OneCell.x;
         _zCell = _constantConstraints.OneCell.z;
+        _meshBounds = GetComponent<MeshRenderer>().bounds;
     }
 
     void OnMouseDown()
@@ -54,7 +57,7 @@ public class MainCapsulePlayer : MonoBehaviour
         if (_playerRequestOrder.NewMove)
         {
             _playerRequestOrder.NewMove = false;
-            Vector3 yPos = new Vector3(_playerRequestOrder.MoveToClick.x, transform.position.y, _playerRequestOrder.MoveToClick.z);
+            Vector3 yPos = new Vector3(_playerRequestOrder.MoveToClick.x, _playerRequestOrder.MoveToClick.y + _meshBounds.extents.y, _playerRequestOrder.MoveToClick.z);
 
             if (_moveToNextCell)
             {
@@ -84,35 +87,8 @@ public class MainCapsulePlayer : MonoBehaviour
 //            Debug.Log(_moveEndPoint);
 //            Debug.Log(xDistance);
 
-            if ((xDistance > .1f || xDistance < -.1f) && (zDistance > .1f || zDistance < -.1f))
-            {
-//                Debug.Log(xDistance > zDistance);
-                if (xDistance > zDistance)
-                {
-                    _nextCell = transform.position + new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
-                    _moveToNextCell = true;
-
-                }
-                else
-                {
-                    _nextCell = transform.position + new Vector3(0, 0, _zCell * Math.Sign(zDistance));
-                    _moveToNextCell = true;
-                }
-            }
-            else
-            {
-                if (xDistance > .1f || xDistance < -.1f)
-                {
-                    _nextCell = transform.position + new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
-                    _moveToNextCell = true;
-
-                }
-                else if (zDistance > .1f || zDistance < -.1f)
-                {
-                    _nextCell = transform.position + new Vector3(0, 0, _zCell * Math.Sign(zDistance));
-                    _moveToNextCell = true;
-                }
-            }
+            _nextCell = FindNextCell(transform.position, xDistance, zDistance);
+            _moveToNextCell = true;
 
             Vector3 coordinates = _nextCell + new Vector3(0, 10, 0);
 //            GameObject gm = new GameObject($"coordinates");
@@ -120,10 +96,8 @@ public class MainCapsulePlayer : MonoBehaviour
 
             if (Physics.Raycast(new Ray(coordinates, Vector3.down), out RaycastHit hitinfo))
             {
-                Debug.Log(hitinfo.point);
-                MeshRenderer mr = GetComponent<MeshRenderer>();
-
-                _newElevation = new Vector3(0, hitinfo.point.y - transform.position.y + 1, 0);
+                _newElevation = new Vector3(0, hitinfo.point.y - transform.position.y + _meshBounds.extents.y, 0);
+                _nextCell += _newElevation;
             }
 
             _startCellPosition = transform.position;
@@ -138,10 +112,10 @@ public class MainCapsulePlayer : MonoBehaviour
 //            if (Vector3.Distance(_nextCell, transform.position) < 0.1f)
             if (_nextCell == transform.position)
             {
-                Debug.Log(_newElevation);
 //                transform.position = _nextCell + _newElevation;
                 transform.position = _nextCell;
 
+//                Debug.Log(_nextCell + " " + Vector3.Distance(_moveEndPoint, transform.position) + " " + _meshBounds.extents.y);
                 if (Vector3.Distance(_moveEndPoint, transform.position) < 0.1f)
                 {
                     _nextCell = Vector3.zero;
@@ -158,4 +132,45 @@ public class MainCapsulePlayer : MonoBehaviour
             }
         }
     }
+
+    public Vector3 FindNextCell(Vector3 curPosition, float xDistance, float zDistance)
+    {
+        Vector3 newPosition = Vector3.zero;
+
+        if ((xDistance > .1f || xDistance < -.1f) && (zDistance > .1f || zDistance < -.1f))
+        {
+            if (Math.Abs(xDistance) > Math.Abs(zDistance))
+            {
+                newPosition = curPosition + new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
+            }
+            else
+            {
+                newPosition = curPosition + new Vector3(0, 0, _zCell * Math.Sign(zDistance));
+            }
+        }
+        else
+        {
+            if (xDistance > .1f || xDistance < -.1f)
+            {
+                newPosition = curPosition + new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
+
+            }
+            else if (zDistance > .1f || zDistance < -.1f)
+            {
+                newPosition = curPosition + new Vector3(0, 0, _zCell * Math.Sign(zDistance));
+            }
+        }
+
+        return newPosition;
+    }
+
+//    private HashSet<Vector3> AddToHashSet(HashSet<Vector3> generalPath, Vector3 pointInSpace, float shiftDistance)
+//    {
+//        generalPath.Add(pointInSpace + new Vector3(shiftDistance, 0, 0));
+//        generalPath.Add(pointInSpace + new Vector3(-shiftDistance, 0, 0));
+//        generalPath.Add(pointInSpace + new Vector3(0, 0, shiftDistance));
+//        generalPath.Add(pointInSpace + new Vector3(0, 0, -shiftDistance));
+//
+//        return generalPath;
+//    }
 }
