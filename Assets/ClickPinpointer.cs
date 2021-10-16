@@ -7,18 +7,8 @@ using UnityEngine;
 public class ClickPinpointer : MonoBehaviour
 {
     private PlayerRequestOrder _pro;
-    private Transform _squareMarker;
+    private static Transform _squareMarker;
     private bool _mouseOver = true;
-
-    public void OnMouseEnter()
-    {
-        _mouseOver = true;
-    }
-
-    public void OnMouseExit()
-    {
-        _mouseOver = false;
-    }
 
     public void OnMouseDown()
     {
@@ -49,30 +39,30 @@ public class ClickPinpointer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_mouseOver)
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitinfo2, 100, ~LayerMask.GetMask("Playable")))
         {
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitinfo2))
+            if (hitinfo2.point.z > -18)
             {
-                if (hitinfo2.point.z > -18)
-                {
-                    float x = (float)(Math.Ceiling(hitinfo2.point.x) - .5f);
-                    float z = (float)(Math.Ceiling(hitinfo2.point.z) - .5f);
+                float x = (float)(Math.Ceiling(hitinfo2.point.x) - .5f);
+                float z = (float)(Math.Ceiling(hitinfo2.point.z) - .5f);
 
-                    _squareMarker.position = new Vector3(x, hitinfo2.point.y + .001f, z);
-                    _squareMarker.GetComponent<MeshRenderer>().material.color = Color.green;
+                _squareMarker.position = new Vector3(x, hitinfo2.point.y + .002f, z);
+                _squareMarker.GetComponent<MeshRenderer>().material.color = Color.green;
 
-                    Debug.Log($"{hitinfo2.point}");
-                }
+//                    Debug.Log($"{hitinfo2.point}");
             }
-
         }
         
     }
 
     public void OnEnable()
     {
+        if (_squareMarker is null)
+        {
+            Transform originalSquareMarker = FindObjectOfType<SquareInstance>().transform;
+            _squareMarker = Instantiate(originalSquareMarker, Vector3.zero, originalSquareMarker.rotation);
+        }
 
-        _squareMarker = FindObjectOfType<SquareInstance>().transform;
         _pro = FindObjectOfType<PlayerRequestOrder>();
     }
 }

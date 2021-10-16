@@ -3368,14 +3368,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainCapsulePlayer
       objectReference: {fileID: 0}
-    - target: {fileID: 2815004784904408907, guid: ec5b008b8c3a6df4480115b64f7c8a0e, type: 3}
-      propertyPath: m_Radius
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 2815004784904408907, guid: ec5b008b8c3a6df4480115b64f7c8a0e, type: 3}
-      propertyPath: m_Center.x
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec5b008b8c3a6df4480115b64f7c8a0e, type: 3}
 --- !u!1 &263874804
@@ -3410,6 +3402,10 @@ MonoBehaviour:
   OneCell: {x: 1, y: 0, z: 1}
   UnreachableHeight: 1
   BaseMovementRange: 3
+  MapSizeX: 32
+  MapSizeZ: 32
+  MinPointX: -15
+  MinPointZ: -18
 --- !u!4 &263874806
 Transform:
   m_ObjectHideFlags: 0
@@ -6080,7 +6076,7 @@ GameObject:
   - component: {fileID: 491796177}
   - component: {fileID: 491796176}
   - component: {fileID: 491796174}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: SquareInstance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
