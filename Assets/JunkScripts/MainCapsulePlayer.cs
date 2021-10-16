@@ -200,13 +200,16 @@ public class MainCapsulePlayer : MonoBehaviour
 
         Transform si = _colorSquareInstance;
 
+        //////////////////
         if (transform.position != _previousPosition)
         {
             _movementHashSet.Clear();
             _previousPosition = transform.position;
         }
 
-        _movementHashSet = AddToHashSet(_movementHashSet, transform.position, 1);
+        _movementHashSet = AddToHashSet(_movementHashSet, transform.position - new Vector3(0, _meshBounds.extents.y, 0), 1);
+
+        //?///////////////
         HashSet<Vector3> interHashSet = new HashSet<Vector3>(_movementHashSet);
 
         foreach (Vector3 recursiVector3 in _movementHashSet)
@@ -214,11 +217,20 @@ public class MainCapsulePlayer : MonoBehaviour
             interHashSet = AddToHashSet(interHashSet, recursiVector3, 1);
         }
 
+//        HashSet<Vector3> inter2HashSet = new HashSet<Vector3>(_movementHashSet);
+//
+//        foreach (Vector3 recursiVector5 in interHashSet)
+//        {
+//            inter2HashSet = AddToHashSet(interHashSet, recursiVector5, 1);
+//        }
+        //?///////////////////
+
         Vector3 curCell = transform.position;
         curCell.y -= _meshBounds.extents.y;
         interHashSet.RemoveWhere((item) => item.x == curCell.x && item.z == curCell.z);
 
         _movementHashSet = interHashSet;
+        //////////////////
 
         int iterator = 0;
 
@@ -239,10 +251,48 @@ public class MainCapsulePlayer : MonoBehaviour
 
     private HashSet<Vector3> AddToHashSet(HashSet<Vector3> generalPath, Vector3 pointInSpace, float shiftDistance)
     {
-        generalPath.Add(ClampBounds(pointInSpace + Vector3.right * shiftDistance));
-        generalPath.Add(ClampBounds(pointInSpace + Vector3.left * shiftDistance));
-        generalPath.Add(ClampBounds(pointInSpace + Vector3.forward * shiftDistance));
-        generalPath.Add(ClampBounds(pointInSpace + Vector3.back * shiftDistance));
+//        Vector3 rightStep = ClampBounds(pointInSpace + Vector3.right * shiftDistance);
+//
+//        if (Math.Abs(rightStep.y - pointInSpace.y) <= .5f)
+//        {
+//            generalPath.Add(rightStep);
+//        }
+
+        generalPath = AddToHashSetIf(generalPath, pointInSpace, shiftDistance, Vector3.right);
+
+        Vector3 leftStep = ClampBounds(pointInSpace + Vector3.left * shiftDistance);
+
+        if (Math.Abs(leftStep.y - pointInSpace.y) <= .5f)
+        {
+            generalPath.Add(leftStep);
+        }
+
+        Vector3 forwardStep = ClampBounds(pointInSpace + Vector3.forward * shiftDistance);
+
+        if (Math.Abs(forwardStep.y - pointInSpace.y) <= .5f)
+        {
+//            Debug.Log(forwardStep + " " + pointInSpace);
+            generalPath.Add(forwardStep);
+        }
+
+        Vector3 backStep = ClampBounds(pointInSpace + Vector3.back * shiftDistance);
+
+        if (Math.Abs(backStep.y - pointInSpace.y) <= .5f)
+        {
+            generalPath.Add(backStep);
+        }
+
+        return generalPath;
+    }
+
+    private HashSet<Vector3> AddToHashSetIf(HashSet<Vector3> generalPath, Vector3 pointInSpace, float shiftDistance, Vector3 direction)
+    {
+        Vector3 directedStep = ClampBounds(pointInSpace + direction * shiftDistance);
+
+        if (Math.Abs(directedStep.y - pointInSpace.y) <= _constantConstraints.MaxStepHeight)
+        {
+            generalPath.Add(directedStep);
+        }
 
         return generalPath;
     }
