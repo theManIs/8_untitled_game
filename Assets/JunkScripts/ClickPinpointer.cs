@@ -40,6 +40,7 @@ public class ClickPinpointer : MonoBehaviour
     void Update()
     {
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitinfo2, 100, ~LayerMask.GetMask("Playable")))
+//        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitinfo2, 100))
         {
             if (hitinfo2.point.z > -18)
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MainCapsulePlayer : MonoBehaviour
@@ -29,6 +30,8 @@ public class MainCapsulePlayer : MonoBehaviour
     private Transform _colorSquareInstance;
     private bool _showHideLock = false;
 
+    private bool _thisInstanceReady = false;
+
     public void OnEnable()
     {
         _defaultMaterial = GetComponent<MeshRenderer>();
@@ -45,15 +48,33 @@ public class MainCapsulePlayer : MonoBehaviour
         ShowRange();
     }
 
+    public void OnMouseEnter()
+    {
+        if (!_thisInstanceReady)
+        {
+            _defaultMaterial.material.color = Color.cyan;
+        }
+    }
+
+    public void OnMouseExit()
+    {
+        if (!_thisInstanceReady)
+        {
+            _defaultMaterial.material.color = _defaultColor;
+        }
+    }
+
     void OnMouseDown()
     {
         if (_defaultMaterial.material.color == Color.red)
         {
             _defaultMaterial.material.color = _defaultColor;
+            _thisInstanceReady = false;
         }
         else
         {
             _defaultMaterial.material.color = Color.red;
+            _thisInstanceReady = true;
         }
     }
 
@@ -65,7 +86,7 @@ public class MainCapsulePlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_playerRequestOrder.NewMove)
+        if (_thisInstanceReady && _playerRequestOrder.NewMove)
         {
             _playerRequestOrder.NewMove = false;
             Vector3 yPos = new Vector3(_playerRequestOrder.MoveToClick.x, _playerRequestOrder.MoveToClick.y + _meshBounds.extents.y, _playerRequestOrder.MoveToClick.z);
@@ -101,19 +122,33 @@ public class MainCapsulePlayer : MonoBehaviour
 //            Debug.Log(xDistance);
 
             _nextCell = FindNextCell(transform.position, xDistance, zDistance);
-            _moveToNextCell = true;
 
-            Vector3 coordinates = _nextCell + new Vector3(0, 10, 0);
-//            GameObject gm = new GameObject($"coordinates");
-//            gm.transform.position = coordinates;
-
-            if (Physics.Raycast(new Ray(coordinates, Vector3.down), out RaycastHit hitinfo))
+            if (_nextCell != Vector3.zero)
             {
-                _newElevation = new Vector3(0, hitinfo.point.y - transform.position.y + _meshBounds.extents.y, 0);
-                _nextCell += _newElevation;
-            }
+                _moveToNextCell = true;
 
-            _startCellPosition = transform.position;
+                Vector3 coordinates = _nextCell + new Vector3(0, 10, 0);
+                //            GameObject gm = new GameObject($"coordinates");
+                //            gm.transform.position = coordinates;
+
+                if (Physics.Raycast(new Ray(coordinates, Vector3.down), out RaycastHit hitinfo))
+                {
+                    _newElevation = new Vector3(0, hitinfo.point.y - transform.position.y + _meshBounds.extents.y, 0);
+                    _nextCell += _newElevation;
+                }
+
+                _startCellPosition = transform.position;
+            }
+            else
+            {
+
+                _nextCell = Vector3.zero;
+                _moveEndPoint = Vector3.zero;
+                _moveToNextCell = false;
+                _isMovingToEnd = false;
+
+                ResetRange();
+            }
         }
 
         if (_moveToNextCell)
@@ -151,32 +186,99 @@ public class MainCapsulePlayer : MonoBehaviour
     public Vector3 FindNextCell(Vector3 curPosition, float xDistance, float zDistance)
     {
         Vector3 newPosition = Vector3.zero;
+        Vector3 curTile = new Vector3(curPosition.x, curPosition.y, curPosition.z);
+        curTile.y -= _meshBounds.extents.y;
+        Vector3 xMovement = new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
+        Vector3 zMovement = new Vector3(0, 0, _zCell * Math.Sign(zDistance));
+        Vector3 xNextStep = xMovement + curTile;
+        Vector3 zNextStep = zMovement + curTile;
+        bool hasXMovement = false;
+        bool hasZMovement = false;
 
-        if ((xDistance > .1f || xDistance < -.1f) && (zDistance > .1f || zDistance < -.1f))
+        foreach (var vector3 in _movementHashSet)
         {
-            if (Math.Abs(xDistance) > Math.Abs(zDistance))
+            if (curTile.x == vector3.x && curTile.z == vector3.z)
             {
-                newPosition = curPosition + new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
+                continue;
+            }
+
+            if (vector3.x == xNextStep.x && vector3.z == xNextStep.z)
+            {
+                hasXMovement = true;
+//                Debug.Log("X " + vector3);
+            }
+
+            if (vector3.x == zNextStep.x && vector3.z == zNextStep.z)
+            {
+                hasZMovement = true;
+//                Debug.Log("Z " + vector3);
+            }
+        }
+
+        if (hasXMovement && hasZMovement)
+//        if (false)
+        {
+            if ((xDistance > .1f || xDistance < -.1f) && (zDistance > .1f || zDistance < -.1f))
+            {
+                if (Math.Abs(xDistance) > Math.Abs(zDistance))
+                {
+                    newPosition = curPosition + new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
+                }
+                else
+                {
+                    newPosition = curPosition + new Vector3(0, 0, _zCell * Math.Sign(zDistance));
+                }
             }
             else
             {
-                newPosition = curPosition + new Vector3(0, 0, _zCell * Math.Sign(zDistance));
-            }
-        }
-        else
-        {
-            if (xDistance > .1f || xDistance < -.1f)
-            {
-                newPosition = curPosition + new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
+                if (xDistance > .1f || xDistance < -.1f)
+                {
+                    newPosition = curPosition + new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
 
-            }
-            else if (zDistance > .1f || zDistance < -.1f)
-            {
-                newPosition = curPosition + new Vector3(0, 0, _zCell * Math.Sign(zDistance));
+                }
+                else if (zDistance > .1f || zDistance < -.1f)
+                {
+                    newPosition = curPosition + new Vector3(0, 0, _zCell * Math.Sign(zDistance));
+                }
             }
         }
+        else if (hasXMovement)
+        //        else if (true)
+        {
+//            Debug.Log((xMovement + curTile) + " " + (zMovement + curTile) + " " + curPosition);
+            newPosition = curPosition + new Vector3(_xCell * Math.Sign(xDistance), 0, 0);
+        }
+        else if (hasZMovement)
+        {
+//            Debug.Log((xMovement + curTile) + " " + (zMovement + curTile) + " " + curPosition);
+            newPosition = curPosition + new Vector3(0, 0, _zCell * Math.Sign(zDistance));
+        }
+//        else
+//        {
+//            foreach (var vector3 in _movementHashSet)
+//            {
+//                    Debug.Log("X " + vector3);
+//            }
+//            Debug.Break();
+//        }
+//
+//        if (newPosition == Vector3.zero)
+//        {
+//            Debug.Log(newPosition);
+//            foreach (var vector3 in _movementHashSet)
+//            {
+//                Debug.Log("X " + vector3);
+//            }
+//            Debug.Break();
+//        }
 
         return newPosition;
+    }
+
+    private void ResetRange()
+    {
+        HideRange();
+        ShowRange();
     }
 
     private void HideRange()
