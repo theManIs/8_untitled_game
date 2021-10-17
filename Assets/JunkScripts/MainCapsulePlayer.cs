@@ -9,7 +9,7 @@ public class MainCapsulePlayer : MonoBehaviour
     private Color _defaultColor;
     private PlayerRequestOrder _playerRequestOrder;
     
-    private ConstantConstraints _constantConstraints;
+    private ConstantConstraints _cCon;
     private float _xCell = 1;
     private float _zCell = 1;
 
@@ -37,9 +37,9 @@ public class MainCapsulePlayer : MonoBehaviour
         _defaultMaterial = GetComponent<MeshRenderer>();
         _defaultColor = _defaultMaterial.material.color;
         _playerRequestOrder = FindObjectOfType<PlayerRequestOrder>();
-        _constantConstraints = FindObjectOfType<ConstantConstraints>();
-        _xCell = _constantConstraints.OneCell.x;
-        _zCell = _constantConstraints.OneCell.z;
+        _cCon = FindObjectOfType<ConstantConstraints>();
+        _xCell = _cCon.OneCell.x;
+        _zCell = _cCon.OneCell.z;
         _meshBounds = GetComponent<MeshRenderer>().bounds;
 
         Transform originalSquare = FindObjectOfType<SquareInstance>().transform;
@@ -303,8 +303,9 @@ public class MainCapsulePlayer : MonoBehaviour
         _showHideLock = true;
 
         Vector3 currentTile = transform.position - new Vector3(0, _meshBounds.extents.y, 0);
-        _movementHashSet = StepCellAdder(new HashSet<Vector3>{ currentTile }, _constantConstraints.BaseMovementRange);
-        _movementHashSet.RemoveWhere((item) => item.x == currentTile.x && item.z == currentTile.z);
+        _movementHashSet = StepCellAdder(new HashSet<Vector3> {currentTile}, _cCon.BaseMovementRange);
+        _movementHashSet = RemovePosition(RemoveOutOfBounds(_movementHashSet), currentTile);
+//        _movementHashSet.RemoveWhere((item) => item.x == currentTile.x && item.z == currentTile.z);
 
         int iterator = 0;
         Transform si = _colorSquareInstance;
@@ -323,6 +324,20 @@ public class MainCapsulePlayer : MonoBehaviour
         }
     }
 
+    private HashSet<Vector3> RemoveOutOfBounds(HashSet<Vector3> setToCut)
+    {
+        setToCut.RemoveWhere(point => point.x <= _cCon.MinX || point.x >= _cCon.MaxX);
+        setToCut.RemoveWhere(point => point.z <= _cCon.MinZ || point.z >= _cCon.MaxZ);
+
+        return setToCut;
+    }
+
+    private HashSet<Vector3> RemovePosition(HashSet<Vector3> setToCut, Vector3 posToRemove)
+    {
+        setToCut.RemoveWhere(point => point.x == posToRemove.x && point.x == posToRemove.y);
+
+        return setToCut;
+    }
 
     private HashSet<Vector3> StepCellAdder(HashSet<Vector3> _previousHashSet, int iterator)
     {
@@ -332,7 +347,7 @@ public class MainCapsulePlayer : MonoBehaviour
 
         foreach (Vector3 recursiVector3 in _previousHashSet)
         {
-            interHashSet = AddToHashSet(interHashSet, recursiVector3, _constantConstraints.MaxStepDistance);
+            interHashSet = AddToHashSet(interHashSet, recursiVector3, _cCon.MaxStepDistance);
         }
 
         if (iterator != 0)
@@ -384,7 +399,7 @@ public class MainCapsulePlayer : MonoBehaviour
     {
         Vector3 directedStep = ClampBounds(pointInSpace + direction * shiftDistance);
 
-        if (Math.Abs(directedStep.y - pointInSpace.y) <= _constantConstraints.MaxStepHeight)
+        if (Math.Abs(directedStep.y - pointInSpace.y) <= _cCon.MaxStepHeight)
         {
             generalPath.Add(directedStep);
         }
@@ -394,11 +409,11 @@ public class MainCapsulePlayer : MonoBehaviour
 
     private Vector3 ClampBounds(Vector3 pointInSpace)
     {
-        pointInSpace.x = Mathf.Clamp(pointInSpace.x, _constantConstraints.MinPointX,
-            _constantConstraints.MinPointX + _constantConstraints.MapSizeX);
+        pointInSpace.x = Mathf.Clamp(pointInSpace.x, _cCon.MinX,
+            _cCon.MinX + _cCon.MapSizeX);
 
-        pointInSpace.z = Mathf.Clamp(pointInSpace.z, _constantConstraints.MinPointZ,
-            _constantConstraints.MinPointZ + _constantConstraints.MapSizeZ);
+        pointInSpace.z = Mathf.Clamp(pointInSpace.z, _cCon.MinZ,
+            _cCon.MinZ + _cCon.MapSizeZ);
 
         pointInSpace.y = GetElevation(pointInSpace);
 

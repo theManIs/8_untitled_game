@@ -11,6 +11,8 @@ public class ConstantConstraints : MonoBehaviour
     public int BaseMovementRange = 3;
     public float MapSizeX = 32;
     public float MapSizeZ = 32;
-    public float MinPointX = -15;
-    public float MinPointZ = -18;
+    public float MinX = -15;
+    public float MinZ = -18;
+    public float MaxX = 17;
+    public float MaxZ = 14;
 }
