@@ -45,7 +45,7 @@ public class MainCapsulePlayer : MonoBehaviour
         Transform originalSquare = FindObjectOfType<SquareInstance>().transform;
         _colorSquareInstance = Instantiate(originalSquare, new Vector3(0, -100, 0), originalSquare.rotation);
 
-        ShowRange();
+//        ShowRange();
     }
 
     public void OnMouseEnter()
@@ -70,11 +70,15 @@ public class MainCapsulePlayer : MonoBehaviour
         {
             _defaultMaterial.material.color = _defaultColor;
             _thisInstanceReady = false;
+
+            HideRange();
         }
         else
         {
             _defaultMaterial.material.color = Color.red;
             _thisInstanceReady = true;
+
+            ShowRange();
         }
     }
 
@@ -170,7 +174,7 @@ public class MainCapsulePlayer : MonoBehaviour
                     _moveEndPoint = Vector3.zero;
                     _moveToNextCell = false;
 
-                    ShowRange();
+                    ResetRange();
                 }
                 else
                 {
@@ -296,46 +300,14 @@ public class MainCapsulePlayer : MonoBehaviour
 
     private void ShowRange()
     {
-        HideRange();
-
         _showHideLock = true;
 
-        Transform si = _colorSquareInstance;
-
-        //////////////////
-        if (transform.position != _previousPosition)
-        {
-            _movementHashSet.Clear();
-            _previousPosition = transform.position;
-        }
-
-        _movementHashSet = AddToHashSet(_movementHashSet, transform.position - new Vector3(0, _meshBounds.extents.y, 0), 1);
-
-        //?///////////////
-        HashSet<Vector3> interHashSet = new HashSet<Vector3>(_movementHashSet);
-
-        foreach (Vector3 recursiVector3 in _movementHashSet)
-        {
-            interHashSet = AddToHashSet(interHashSet, recursiVector3, 1);
-        }
-
-//        HashSet<Vector3> inter2HashSet = new HashSet<Vector3>(_movementHashSet);
-//
-//        foreach (Vector3 recursiVector5 in interHashSet)
-//        {
-//            inter2HashSet = AddToHashSet(interHashSet, recursiVector5, 1);
-//        }
-        //?///////////////////
-
-        Vector3 curCell = transform.position;
-        curCell.y -= _meshBounds.extents.y;
-        interHashSet.RemoveWhere((item) => item.x == curCell.x && item.z == curCell.z);
-
-        _movementHashSet = interHashSet;
-        //////////////////
+        Vector3 currentTile = transform.position - new Vector3(0, _meshBounds.extents.y, 0);
+        _movementHashSet = StepCellAdder(new HashSet<Vector3>{ currentTile }, _constantConstraints.BaseMovementRange);
+        _movementHashSet.RemoveWhere((item) => item.x == currentTile.x && item.z == currentTile.z);
 
         int iterator = 0;
-
+        Transform si = _colorSquareInstance;
         _movementHighlight = new Transform[_movementHashSet.Count];
 
         foreach (Vector3 vector3 in _movementHashSet)
@@ -344,11 +316,32 @@ public class MainCapsulePlayer : MonoBehaviour
             highlightPoint.y += .001f;
             Transform newSi = Instantiate(si, highlightPoint, si.rotation);
             newSi.GetComponent<MeshRenderer>().material.color = Color.yellow;
-//            newSi.transform.parent = transform;
+            newSi.transform.parent = transform;
 
             _movementHighlight[iterator] = newSi;
             iterator++;
         }
+    }
+
+
+    private HashSet<Vector3> StepCellAdder(HashSet<Vector3> _previousHashSet, int iterator)
+    {
+        iterator--;
+
+        HashSet<Vector3> interHashSet = new HashSet<Vector3>(_previousHashSet);
+
+        foreach (Vector3 recursiVector3 in _previousHashSet)
+        {
+            interHashSet = AddToHashSet(interHashSet, recursiVector3, _constantConstraints.MaxStepDistance);
+        }
+
+        if (iterator != 0)
+        {
+            return StepCellAdder(interHashSet, iterator);
+        }
+
+        return interHashSet;
+
     }
 
     private HashSet<Vector3> AddToHashSet(HashSet<Vector3> generalPath, Vector3 pointInSpace, float shiftDistance)
