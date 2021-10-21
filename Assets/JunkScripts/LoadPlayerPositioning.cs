@@ -6,6 +6,7 @@ public class LoadPlayerPositioning : MonoBehaviour
 {
     public MainCapsulePlayer StartingWorkpiece;
     public Vector3[] PlayerInstances;
+    public string[] PlayerNames;
 
     private ConstantConstraints _cc;
 
@@ -14,6 +15,7 @@ public class LoadPlayerPositioning : MonoBehaviour
     {
         _cc = FindObjectOfType<ConstantConstraints>();
         StaticMath smath = new StaticMath();
+        int iterator = 0;
 
         foreach (Vector3 playerInstance in PlayerInstances)
         {
@@ -28,6 +30,13 @@ public class LoadPlayerPositioning : MonoBehaviour
 
                 trn.position = verticalAlign;
             }
+
+            if (PlayerNames.Length > iterator)
+            {
+                trn.name = PlayerNames[iterator];
+            }
+
+            iterator++;
         }
     }
 

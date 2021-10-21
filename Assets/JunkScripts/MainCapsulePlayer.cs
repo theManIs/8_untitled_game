@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class MainCapsulePlayer : MonoBehaviour
 {
+    public HashSet<Vector3> MovementSet => _movementHashSet;
+    public Vector3 playerSquare;
+    public bool ThisInstanceReady = false;
+
     private MeshRenderer _defaultMaterial;
     private Color _defaultColor;
     private PlayerRequestOrder _playerRequestOrder;
@@ -30,8 +34,6 @@ public class MainCapsulePlayer : MonoBehaviour
     private Transform _colorSquareInstance;
     private bool _showHideLock = false;
 
-    private bool _thisInstanceReady = false;
-
     public void OnEnable()
     {
         _defaultMaterial = GetComponent<MeshRenderer>();
@@ -50,7 +52,7 @@ public class MainCapsulePlayer : MonoBehaviour
 
     public void OnMouseEnter()
     {
-        if (!_thisInstanceReady)
+        if (!ThisInstanceReady)
         {
             _defaultMaterial.material.color = Color.cyan;
         }
@@ -58,7 +60,7 @@ public class MainCapsulePlayer : MonoBehaviour
 
     public void OnMouseExit()
     {
-        if (!_thisInstanceReady)
+        if (!ThisInstanceReady)
         {
             _defaultMaterial.material.color = _defaultColor;
         }
@@ -69,14 +71,14 @@ public class MainCapsulePlayer : MonoBehaviour
         if (_defaultMaterial.material.color == Color.red)
         {
             _defaultMaterial.material.color = _defaultColor;
-            _thisInstanceReady = false;
+            ThisInstanceReady = false;
 
             HideRange();
         }
         else
         {
             _defaultMaterial.material.color = Color.red;
-            _thisInstanceReady = true;
+            ThisInstanceReady = true;
 
             ShowRange();
         }
@@ -90,7 +92,7 @@ public class MainCapsulePlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_thisInstanceReady && _playerRequestOrder.NewMove)
+        if (ThisInstanceReady && _playerRequestOrder.NewMove)
         {
             _playerRequestOrder.NewMove = false;
             Vector3 yPos = new Vector3(_playerRequestOrder.MoveToClick.x, _playerRequestOrder.MoveToClick.y + _meshBounds.extents.y, _playerRequestOrder.MoveToClick.z);
