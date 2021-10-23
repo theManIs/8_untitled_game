@@ -7,62 +7,62 @@ using UnityEngine.UI;
 public class HighlitingAccuracy : MonoBehaviour
 {
     public RectTransform accuracyCanvas;
-    
-    private PlayersHub playersHub;
-    private Queue<RectTransform> _canvasRow = new Queue<RectTransform>();
-    private Queue<RectTransform> _canvasRowNew = new Queue<RectTransform>();
+
+    private MainCapsulePlayer[] _mainCapsulePlayers;
+    private MainCapsulePlayer _lastActivePlayer;
+    private PoolOfRectTransform _rtPool;
     
 
-    // Start is called before the first frame update
     public void OnEnable()
     {
-        playersHub = FindObjectOfType<PlayersHub>();
+        _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
+        _rtPool = new PoolOfRectTransform();
+        _rtPool.SetCanonicalRect(accuracyCanvas);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Update()
     {
-        if (playersHub.MainCapsulePlayers.Count(item => item.ThisInstanceReady) > 0)
-        {
-            if (_canvasRowNew.Count > 0)
-            {
-                _canvasRow = new Queue<RectTransform>(_canvasRowNew);
-                _canvasRowNew.Clear();
-            }
+        _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
 
-            MainCapsulePlayer activePlayer = playersHub.MainCapsulePlayers.First(item => item.ThisInstanceReady);
-            HashSet<Vector3> movementRange = activePlayer.MovementSet;
-            MainCapsulePlayer[] nonActivePlayers = playersHub.MainCapsulePlayers.Where(item => !item.ThisInstanceReady).ToArray();
-//            MainCapsulePlayer[] nonActivePlayers = playersHub.MainCapsulePlayers.Where(item => movementRange.Contains(item.playerSquare)).ToArray();
+        _rtPool.RefreshQueue();
+
+        if (_mainCapsulePlayers.Count(item => item.ThisInstanceReady) > 0)
+        {
+
+            MainCapsulePlayer activePlayer = _mainCapsulePlayers.First(item => item.ThisInstanceReady);
+            Bounds bn = activePlayer.GetComponent<MeshRenderer>().bounds;
+            Vector3 topShiftCoordinates = new Vector3(0, bn.extents.y + accuracyCanvas.rect.height / 2, 0);
+            MainCapsulePlayer[] nonActivePlayers = _mainCapsulePlayers.Where(item => !item.ThisInstanceReady).ToArray();
 
             foreach (MainCapsulePlayer capsule in nonActivePlayers)
             {
                 float realDistance = Mathf.Abs(capsule.playerSquare.x - activePlayer.playerSquare.x) + Mathf.Abs(capsule.playerSquare.z - activePlayer.playerSquare.z);
 
+                RectTransform can = _rtPool.Dequeue();
+                can.transform.SetParent(transform);
+                can.transform.position = capsule.playerSquare + topShiftCoordinates;
+
+                TextMeshProUGUI tx = can.GetComponentInChildren<TextMeshProUGUI>();
+
                 if (realDistance <= 3)
                 {
-                    RectTransform can;
-
-                    if (_canvasRow.Count > 0)
-                    {
-
-                        can = _canvasRow.Dequeue();
-                        _canvasRowNew.Enqueue(can);
-                    }
-                    else
-                    {
-                        can = Instantiate(accuracyCanvas, capsule.playerSquare + new Vector3(0, 1, 0), accuracyCanvas.rotation);
-                        _canvasRowNew.Enqueue(can);
-                    }
-
-                    TextMeshProUGUI tx = can.GetComponentInChildren<TextMeshProUGUI>();
+                    can.gameObject.SetActive(true);
                     tx.text = realDistance.ToString("N");
-
-
-//                    Debug.Log(capsule.name + " " + capsule.playerSquare + " " + realDistance);
                 }
-
+                else
+                {
+                    can.gameObject.SetActive(false);
+                }
             }
+
+            _lastActivePlayer = activePlayer;
+        } 
+        else if (_lastActivePlayer != null)
+        {
+            _rtPool.SetActive(false);
+
+            _lastActivePlayer = null;
         }
+
     }
 }

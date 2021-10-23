@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MainCapsulePlayer : MonoBehaviour
 {
-    public HashSet<Vector3> MovementSet => _movementHashSet;
+    public Transform OriginSquare;
     public Vector3 playerSquare;
     public bool ThisInstanceReady = false;
 
@@ -31,8 +31,9 @@ public class MainCapsulePlayer : MonoBehaviour
     private HashSet<Vector3> _movementHashSet = new HashSet<Vector3>();
     private Transform[] _movementHighlight = new Transform[0];
     private Vector3 _previousPosition = Vector3.zero;
-    private Transform _colorSquareInstance;
+    private static Transform _colorSquareInstance;
     private bool _showHideLock = false;
+    private StaticMath _smath;
 
     public void OnEnable()
     {
@@ -43,9 +44,13 @@ public class MainCapsulePlayer : MonoBehaviour
         _xCell = _cCon.OneCell.x;
         _zCell = _cCon.OneCell.z;
         _meshBounds = GetComponent<MeshRenderer>().bounds;
+        _smath = new StaticMath();
 
-        Transform originalSquare = FindObjectOfType<SquareInstance>().transform;
-        _colorSquareInstance = Instantiate(originalSquare, new Vector3(0, -100, 0), originalSquare.rotation);
+        if (_colorSquareInstance == null)
+        {
+            _colorSquareInstance = Instantiate(OriginSquare, new Vector3(0, -100, 0), OriginSquare.rotation);
+            _colorSquareInstance.transform.parent = OriginSquare;
+        }
 
 //        ShowRange();
     }
@@ -92,6 +97,9 @@ public class MainCapsulePlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        playerSquare = _smath.PointToCellCenterXZ(transform.position, _meshBounds.extents);
+
         if (ThisInstanceReady && _playerRequestOrder.NewMove)
         {
             _playerRequestOrder.NewMove = false;
