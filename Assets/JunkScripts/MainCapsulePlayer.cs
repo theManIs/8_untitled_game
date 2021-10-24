@@ -98,7 +98,7 @@ public class MainCapsulePlayer : MonoBehaviour
     void Update()
     {
 
-        playerSquare = _smath.PointToCellCenterXZ(transform.position, _meshBounds.extents);
+        playerSquare = _smath.PointToCellCenter(transform.position, _meshBounds.extents);
 
         if (ThisInstanceReady && _playerRequestOrder.NewMove)
         {

@@ -20,6 +20,7 @@ public class LoadPlayerPositioning : MonoBehaviour
         foreach (Vector3 playerInstance in PlayerInstances)
         {
             Transform trn = Instantiate(StartingWorkpiece.transform, playerInstance, StartingWorkpiece.transform.rotation);
+            trn.gameObject.SetActive(true);
             Vector3 verticalAlign = trn.position;
 
             verticalAlign = smath.PointToCellCenterXZ(verticalAlign, _cc.OneCellExtents);
