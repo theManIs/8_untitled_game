@@ -70,6 +70,33 @@ public class AccuracyCounter
         return intersectionList;
     }
 
+    public List<Vector3> StripClosestCells(Vector3 sourcePoint, List<Vector3> obstaclesList)
+    {
+        return obstaclesList.Where(item =>
+        {
+            if (item.x == sourcePoint.x && item.z == sourcePoint.z + 1)
+            {
+                return false;
+            }
+            else if (item.x == sourcePoint.x && item.z == sourcePoint.z - 1)
+            {
+                return false;
+            }
+            else if (item.x == sourcePoint.x + 1 && item.z == sourcePoint.z)
+            {
+                return false;
+            }
+            else if (item.x == sourcePoint.x - 1 && item.z == sourcePoint.z)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }).ToList();
+    }
+
     public float SumObstacles(Vector3 sourcePoint, List<Vector3> obstaclesList)
     {
         float finiteElevation = 0;
@@ -83,7 +110,7 @@ public class AccuracyCounter
             if (elevationDifference >= 1)
             {
                 fullObstacle = true;
-                finiteElevation = elevationDifference;
+                finiteElevation = 1;
             }
             else if (elevationDifference < 1 && elevationDifference > 0 && !fullObstacle)
             {
@@ -97,7 +124,7 @@ public class AccuracyCounter
 
     public float GetStraightLineAccuracy(Vector3 sourcePoint, Vector3 targetPoint)
     {
-        return SumObstacles(sourcePoint, GetIntersection(sourcePoint, targetPoint));
+        return SumObstacles(sourcePoint, StripClosestCells(sourcePoint, GetIntersection(sourcePoint, targetPoint)));
 
 //        Debug.Break();
 //        return GetStraightLineAccuracyX(sourcePoint, targetPoint) + 
