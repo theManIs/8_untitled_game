@@ -96,8 +96,13 @@ public class MainCapsulePlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         playerSquare = _smath.PointToCellCenter(transform.position, _meshBounds.extents);
+//        if (ThisInstanceReady)
+//        {
+//            Debug.Log(playerSquare.x + " " + playerSquare.y + " " + playerSquare.z);
+//            Debug.Log(_meshBounds.extents.x + " " + _meshBounds.extents.y + " " + _meshBounds.extents.z);
+//            Debug.Log(transform.position.x + " " + transform.position.y + " " + transform.position.z);
+//        }
 
         if (ThisInstanceReady && _playerRequestOrder.NewMove)
         {

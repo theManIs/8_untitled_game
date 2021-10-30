@@ -43,11 +43,11 @@ public class HighlitingAccuracy : MonoBehaviour
             Bounds bn = activePlayer.GetComponent<MeshRenderer>().bounds;
             Vector3 topShiftCoordinates = new Vector3(0, bn.size.y + accuracyCanvas.rect.height / 2, 0);
             MainCapsulePlayer[] nonActivePlayers = _mainCapsulePlayers.Where(item => !item.ThisInstanceReady).ToArray();
-
-
             foreach (MainCapsulePlayer capsule in nonActivePlayers)
             {
-//                float realDistance = Mathf.Abs(capsule.playerSquare.x - activePlayer.playerSquare.x) + Mathf.Abs(capsule.playerSquare.z - activePlayer.playerSquare.z);
+
+//                Debug.Log(activePlayer.playerSquare + " " + _sMath.CellCenterToPointXZ(activePlayer.playerSquare) + " " + _sMath.CellCenterToPointXZ(capsule.playerSquare));
+                //                float realDistance = Mathf.Abs(capsule.playerSquare.x - activePlayer.playerSquare.x) + Mathf.Abs(capsule.playerSquare.z - activePlayer.playerSquare.z);
                 float realDistance = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
                 int showPercentage = Convert.ToInt32((1 - realDistance) * 100);
                 RectTransform can = _rtPool.Dequeue();
