@@ -68,7 +68,8 @@ public class AccuracyCounter
 
     private float SetImpactEquation(float xMulti, float triangleArea, float elevationDifference)
     {
-        return xMulti.Equals(1f) ? _maxObstacleImpact : _maxObstacleImpact * triangleArea + elevationDifference / 2;
+//        Debug.Log(triangleArea);  
+        return xMulti.Equals(1f) || xMulti.Equals(0f) ? _maxObstacleImpact : Mathf.Clamp01(_maxObstacleImpact * triangleArea + _maxObstacleImpact / 2.0f);
     }
 
     public List<Vector3> GetIntersection(Vector3 sourcePoint, Vector3 targetPoint)
@@ -231,48 +232,117 @@ public class AccuracyCounter
         return finiteElevation;
     }
 
+    public Vector3[] GetCell(Vector3 v)
+    {
+        return new Vector3[] {
+            new Vector3(v.x, 0, v.z),
+            new Vector3(v.x, 0, v.z - 1),
+            new Vector3(v.x - 1, 0, v.z - 1),
+            new Vector3(v.x - 1, 0, v.z),
+            new Vector3(v.x, 0, v.z),
+        };
+    }
+
     private List<Vector3[]> ScoreImpact(List<Vector3> obstaclesList )
     {
         HashSet<Vector3[]> localTangency = new HashSet<Vector3[]>();
+        HashSet<Vector3[]> triangles = new HashSet<Vector3[]>();
 
-        foreach (Vector3[] vectorArray in _tangency)
+
+        foreach (Vector3 vector3Se in obstaclesList)
         {
-            Vector3 obstacleCell = vectorArray[1];
-            Vector3 v1 = Vector3.zero;
-            Vector3 v2 = Vector3.zero;
-            List<Vector3[]> secondVectorList = _tangency.Where(item => item[1].x == obstacleCell.x && item[1].z == obstacleCell.z).ToList();
-            Vector3 v3 = new Vector3();
+            Vector3[] startTriangle = new Vector3[5] { new Vector3(0, coef, 0), vector3Se, Vector3.zero,  Vector3.zero, Vector3.zero, };
 
-            foreach (Vector3[] secV in secondVectorList)
+            foreach (Vector3[] tangencyOne in _tangency)
             {
-                if (v1 == Vector3.zero)
+                if (vector3Se.x.Equals(tangencyOne[1].x) && vector3Se.z.Equals(tangencyOne[1].z))
                 {
-                    v1 = secV[0];
+                    if (startTriangle[2] == Vector3.zero || startTriangle[2] == tangencyOne[0])
+                    {
+                        startTriangle[2] = tangencyOne[0];
+                    }
+                    else if (startTriangle[3] == Vector3.zero || startTriangle[3] == tangencyOne[0])
+                    {
+                        startTriangle[3] = tangencyOne[0];
+                    }
                 }
-                else if (v2 == Vector3.zero)
-                {
-                    v2 = secV[0];
-                }
-
-                v3.x = secV[0].x % 1f == 0 ? secV[0].x : v3.x;
-                v3.z = secV[0].z % 1f == 0 ? secV[0].z : v3.z;
             }
 
-            if (obstaclesList.Contains(obstacleCell))
-            {
-                if (localTangency.Count(item => item[1].x.Equals(obstacleCell.x) && item[1].z.Equals(obstacleCell.z)) == 0)
-                {
-                    float triangleArea = Mathf.Abs(v1.x * (v2.z - v3.z) + v2.x * (v3.z - v1.z) + v3.x * (v1.z - v2.z)) / 2;
+            startTriangle[4].x = startTriangle[2].x % 1f == 0 ? startTriangle[2].x : startTriangle[3].x;
+            startTriangle[4].z = startTriangle[2].z % 1f == 0 ? startTriangle[2].z : startTriangle[3].z;
 
-                    localTangency.Add(new Vector3[5] { new Vector3(triangleArea, coef, 0), obstacleCell, v1, v2, v3});
-                }
-            }
-            
+            triangles.Add(startTriangle);
         }
+
+        foreach (Vector3[] v3vecs in triangles)
+        {
+            foreach (Vector3 eachGet in GetCell(v3vecs[1]))
+            {
+                if (eachGet.x.Equals(v3vecs[4].x) && eachGet.z.Equals(v3vecs[4].z))
+                {
+                    v3vecs[0].z = 1;
+                    v3vecs[0].x = sm.GetTriangleArea(v3vecs[2], v3vecs[3], v3vecs[4]);
+//                    Debug.Log(v3vecs[1] + " "  + sm.GetTriangleArea(v3vecs[2], v3vecs[3], v3vecs[4]));
+                }
+            }
+
+            if (v3vecs[0].z.Equals(0))
+            {
+                v3vecs[0].x = 1;
+//                float a = 1 * (sm.Min(v3vecs[2].x - Mathf.Floor(v3vecs[2].x), v3vecs[2].x - Mathf.Ceil(v3vecs[2].x)) + sm.Min(v3vecs[3].x - Mathf.Floor(v3vecs[3].x), v3vecs[3].x - Mathf.Ceil(v3vecs[3].x)));
+//                Debug.Log(v3vecs[2].z + " " + Mathf.Floor(v3vecs[2].z));
+//                Debug.Log(v3vecs[1] + " " + sm.Min(v3vecs[2].x - Mathf.Floor(v3vecs[2].x), v3vecs[2].x - Mathf.Ceil(v3vecs[2].x)) + " " + sm.Min(v3vecs[3].x - Mathf.Floor(v3vecs[3].x), v3vecs[3].x - Mathf.Ceil(v3vecs[3].x)) + " " + a);
+            }
+        }
+
+//        foreach (Vector3[] vectorArray in _tangency)
+//        {
+//            Vector3 obstacleCell = vectorArray[1];
+//            Vector3 v1 = Vector3.zero;
+//            Vector3 v2 = Vector3.zero;
+//            List<Vector3[]> secondVectorList = _tangency.Where(item => item[1].x == obstacleCell.x && item[1].z == obstacleCell.z).ToList();
+//            Vector3 v3 = new Vector3();
+//
+//            foreach (Vector3[] secV in secondVectorList)
+//            {
+//                if (secV[0].x == v1.x && secV[0].z == v1.z || secV[0].x == v2.x && secV[0].z == v2.z)
+//                {
+//                    // do nothing
+//                }
+//                else
+//                {
+//                    if (v1 == Vector3.zero)
+//                    {
+//                        v1 = secV[0];
+//                    }
+//                    else if (v2 == Vector3.zero)
+//                    {
+//                        v2 = secV[0];
+//                    }
+//
+//                    v3.x = secV[0].x % 1f == 0 ? secV[0].x : v3.x;
+//                    v3.z = secV[0].z % 1f == 0 ? secV[0].z : v3.z;
+//                }
+//            }
+//
+//            if (obstaclesList.Contains(obstacleCell))
+//            {
+//                if (localTangency.Count(item => item[1].x.Equals(obstacleCell.x) && item[1].z.Equals(obstacleCell.z)) == 0)
+//                {
+//                    float triangleArea = Mathf.Abs(v1.x * (v2.z - v3.z) + v2.x * (v3.z - v1.z) + v3.x * (v1.z - v2.z)) / 2;
+////                    Debug.Log(v1.x * (v2.z - v3.z) + " " + v2.x * (v3.z - v1.z) + " " + v3.x * (v1.z - v2.z));
+////                    Debug.Log(v1 + " " + v2 + " " + v3);
+//                    localTangency.Add(new Vector3[5] { new Vector3(triangleArea, coef, 0), obstacleCell, v1, v2, v3});
+//                }
+//            }
+//            
+//        }
 //        Debug.Log(BugHell.ShowV3(obstaclesList));
 //        Debug.Log(BugHell.ShowV3(_tangency));
 //        Debug.Log(BugHell.ShowV3(localTangency));
-        return localTangency.ToList();
+        Debug.Log(BugHell.ShowV3(triangles));
+//        return localTangency.ToList();
+        return triangles.ToList();
     }
 
     public float GetStraightLineAccuracy(Vector3 sourcePoint, Vector3 targetPoint)

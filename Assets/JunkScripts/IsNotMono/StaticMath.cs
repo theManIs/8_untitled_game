@@ -78,6 +78,11 @@ public class StaticMath
         return height.Equals(0.0f) ? 0 : (Mathf.Abs(height % 1f) <= .5f && Mathf.Abs(height % 1f) > 0 ? Mathf.Ceil(height) - .5f : Mathf.Ceil(height));
     }
 
+    public float GetTriangleArea(Vector3 v1, Vector3 v2, Vector3 v3)
+    {
+        return Mathf.Abs(v1.x * (v2.z - v3.z) + v2.x * (v3.z - v1.z) + v3.x * (v1.z - v2.z)) / 2;
+    }
+
     public static void ShowHashSet(HashSet<Vector3> h3)
     {
         string debubMessage = "";

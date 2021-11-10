@@ -92889,7 +92889,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: PlayerInstances.Array.data[0].x
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: PlayerInstances.Array.data[0].z
@@ -92897,11 +92897,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: PlayerInstances.Array.data[1].x
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: PlayerInstances.Array.data[1].z
-      value: -5
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: PlayerInstances.Array.data[2].x

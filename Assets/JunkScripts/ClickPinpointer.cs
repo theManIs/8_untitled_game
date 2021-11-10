@@ -7,7 +7,7 @@ public class ClickPinpointer : MonoBehaviour
 {
     private PlayerRequestOrder _pro;
     private static Transform _squareMarker;
-    private bool _mouseOver = true;
+//    private bool _mouseOver = true;
 
     public void OnMouseDown()
     {
