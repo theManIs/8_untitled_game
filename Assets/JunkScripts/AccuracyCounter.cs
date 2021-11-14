@@ -16,7 +16,7 @@ public class AccuracyCounter
     private int xSign = -1;
     private readonly Vector3 _extent = new Vector3(.5f, 0, .5f);
     private readonly float _maxObstacleImpact = 1f;
-    private readonly float _triangleAreaMultiplier = 2f;
+//    private readonly float _triangleAreaMultiplier = 2f;
     private HashSet<Vector3[]> _tangency = new HashSet<Vector3[]>();
 
     private void RecountEquation(Vector3 sourcePoint, Vector3 targetPoint)
@@ -68,8 +68,9 @@ public class AccuracyCounter
 
     private float SetImpactEquation(float xMulti, float triangleArea, float elevationDifference)
     {
-//        Debug.Log(triangleArea);  
-        return xMulti.Equals(1f) || xMulti.Equals(0f) ? _maxObstacleImpact : Mathf.Clamp01(_maxObstacleImpact * triangleArea + _maxObstacleImpact / 2.0f);
+//        Debug.Log(xMulti + " " + triangleArea);  
+//        return xMulti.Equals(1f) || xMulti.Equals(0f) ? _maxObstacleImpact : Mathf.Clamp01(_maxObstacleImpact * triangleArea + _maxObstacleImpact / 2.0f);
+        return xMulti.Equals(1f) || xMulti.Equals(0f) ? _maxObstacleImpact : Mathf.Clamp01(_maxObstacleImpact * triangleArea * 2f);
     }
 
     public List<Vector3> GetIntersection(Vector3 sourcePoint, Vector3 targetPoint)
@@ -288,7 +289,7 @@ public class AccuracyCounter
 
             if (v3vecs[0].z.Equals(0))
             {
-                v3vecs[0].x = 1;
+                v3vecs[0].x = .5f;
 //                float a = 1 * (sm.Min(v3vecs[2].x - Mathf.Floor(v3vecs[2].x), v3vecs[2].x - Mathf.Ceil(v3vecs[2].x)) + sm.Min(v3vecs[3].x - Mathf.Floor(v3vecs[3].x), v3vecs[3].x - Mathf.Ceil(v3vecs[3].x)));
 //                Debug.Log(v3vecs[2].z + " " + Mathf.Floor(v3vecs[2].z));
 //                Debug.Log(v3vecs[1] + " " + sm.Min(v3vecs[2].x - Mathf.Floor(v3vecs[2].x), v3vecs[2].x - Mathf.Ceil(v3vecs[2].x)) + " " + sm.Min(v3vecs[3].x - Mathf.Floor(v3vecs[3].x), v3vecs[3].x - Mathf.Ceil(v3vecs[3].x)) + " " + a);
@@ -340,29 +341,52 @@ public class AccuracyCounter
 //        Debug.Log(BugHell.ShowV3(obstaclesList));
 //        Debug.Log(BugHell.ShowV3(_tangency));
 //        Debug.Log(BugHell.ShowV3(localTangency));
-        Debug.Log(BugHell.ShowV3(triangles));
+//        Debug.Log(BugHell.ShowV3(triangles));
 //        return localTangency.ToList();
         return triangles.ToList();
     }
 
-    public float GetStraightLineAccuracy(Vector3 sourcePoint, Vector3 targetPoint)
+    public List<Vector3> DrawTheWholeThing(Vector3 sourcePoint, Vector3 targetPoint)
     {
+        List<Vector3> interL = new List<Vector3>();
         Vector3 sp = sm.PointToCellCenterXZ(sourcePoint, new Vector3(.5f, 0, .5f));
         Vector3 tp = sm.PointToCellCenterXZ(targetPoint, new Vector3(.5f, 0, .5f));
 
+        sp.x -= .5f;
+        tp.x -= .5f;
+
         RecountEquation(sp, tp);
-//        Debug.Log(ScoreStraightZ(sp) + " " + ScoreStraightZ(tp));
+        //        Debug.Log(ScoreStraightZ(sp) + " " + ScoreStraightZ(tp));
+        Debug.DrawLine(ScoreStraightZ(sp), ScoreStraightZ(tp), Color.magenta); 
+        
+        sp.x += 1f;
+        tp.x += 1f;
+
+        interL.AddRange(GetIntersection(sourcePoint, targetPoint));
+
+        RecountEquation(sp, tp);
+        //        Debug.Log(ScoreStraightZ(sp) + " " + ScoreStraightZ(tp));
         Debug.DrawLine(ScoreStraightZ(sp), ScoreStraightZ(tp), Color.magenta);
-        Debug.Break();
 
-        List<Vector3> obstaclesList = StripClosestCells(sourcePoint, targetPoint, GetIntersection(sourcePoint, targetPoint));
+        interL.AddRange(GetIntersection(sourcePoint, targetPoint));
+
+        HashSet<Vector3> uniqueInter = new HashSet<Vector3>();
+
+        foreach (Vector3 v3 in interL)
+        {
+            uniqueInter.Add(v3);
+        }
+
+        return uniqueInter.ToList();
+    }
+
+    public float GetStraightLineAccuracy(Vector3 sourcePoint, Vector3 targetPoint)
+    {
+        List<Vector3> intersectIt = DrawTheWholeThing(sourcePoint, targetPoint);
+        List<Vector3> obstaclesList = StripClosestCells(sourcePoint, targetPoint, intersectIt);
         List<Vector3[]> obstaclesImpact = ScoreImpact(obstaclesList);
-
+        Debug.Break();
         return SumObstacles(sourcePoint, obstaclesImpact);
-
-//        Debug.Break();
-//        return GetStraightLineAccuracyX(sourcePoint, targetPoint) + 
-//                       GetStraightLineAccuracyZ(sourcePoint, targetPoint);
     }
 
     public float GetStraightLineAccuracyX(Vector3 sourcePoint, Vector3 targetPoint)
