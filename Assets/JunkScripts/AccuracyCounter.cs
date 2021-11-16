@@ -19,6 +19,14 @@ public class AccuracyCounter
 //    private readonly float _triangleAreaMultiplier = 2f;
     private HashSet<Vector3[]> _tangency = new HashSet<Vector3[]>();
 
+    private Vector3[] _cellVectors = new Vector3[] {
+        Vector3.zero,
+        Vector3.zero,
+        Vector3.zero,
+        Vector3.zero,
+        Vector3.zero,
+    };
+
     private void RecountEquation(Vector3 sourcePoint, Vector3 targetPoint)
     {
 //        xSign = targetPoint.x > sourcePoint.x ? 1 : -1;
@@ -94,14 +102,14 @@ public class AccuracyCounter
             for (int zi = 0; zi <= Convert.ToInt32(sm.DiffMaxMin(sourcePoint.z, targetPoint.z)); zi++)
             {
 //                Debug.Log(new Vector3(mX, 0, mZ));
-                Vector3[] plane =
-                {
-                    new Vector3(xi + baseX, 0, zi + baseZ),
-                    new Vector3(xi + baseX, 0, zi + baseZ - 1), 
-                    new Vector3(xi + baseX - 1, 0, zi + baseZ - 1),
-                    new Vector3(xi + baseX - 1, 0, zi + baseZ),
-                    new Vector3(xi + baseX, 0, zi + baseZ), 
-                };
+                Vector3[] plane = GetCell(new Vector3(xi + baseX, 0, zi + baseZ));
+//                {
+//                    new Vector3(xi + baseX, 0, zi + baseZ),
+//                    new Vector3(xi + baseX, 0, zi + baseZ - 1), 
+//                    new Vector3(xi + baseX - 1, 0, zi + baseZ - 1),
+//                    new Vector3(xi + baseX - 1, 0, zi + baseZ),
+//                    new Vector3(xi + baseX, 0, zi + baseZ), 
+//                };
 
                 for (int i = 0; i < plane.Length - 1; i++)
                 {
@@ -235,14 +243,30 @@ public class AccuracyCounter
 
     public Vector3[] GetCell(Vector3 v)
     {
-        return new Vector3[] {
-            new Vector3(v.x, 0, v.z),
-            new Vector3(v.x, 0, v.z - 1),
-            new Vector3(v.x - 1, 0, v.z - 1),
-            new Vector3(v.x - 1, 0, v.z),
-            new Vector3(v.x, 0, v.z),
-        };
+        _cellVectors[0].x = v.x;
+        _cellVectors[0].z = v.z;
+        _cellVectors[1].x = v.x;
+        _cellVectors[1].z = v.z - 1;
+        _cellVectors[2].x = v.x - 1;
+        _cellVectors[2].z = v.z - 1;
+        _cellVectors[3].x = v.x - 1;
+        _cellVectors[3].z = v.z;
+        _cellVectors[4].x = v.x;
+        _cellVectors[4].z = v.z;
+
+        return _cellVectors;
     }
+
+//    public Vector3[] GetCell(Vector3 v)
+//    {
+//        return new Vector3[] {
+//            new Vector3(v.x, 0, v.z),
+//            new Vector3(v.x, 0, v.z - 1),
+//            new Vector3(v.x - 1, 0, v.z - 1),
+//            new Vector3(v.x - 1, 0, v.z),
+//            new Vector3(v.x, 0, v.z),
+//        };
+//    }
 
     private List<Vector3[]> ScoreImpact(List<Vector3> obstaclesList )
     {
@@ -385,7 +409,7 @@ public class AccuracyCounter
         List<Vector3> intersectIt = DrawTheWholeThing(sourcePoint, targetPoint);
         List<Vector3> obstaclesList = StripClosestCells(sourcePoint, targetPoint, intersectIt);
         List<Vector3[]> obstaclesImpact = ScoreImpact(obstaclesList);
-        Debug.Break();
+//        Debug.Break();
         return SumObstacles(sourcePoint, obstaclesImpact);
     }
 

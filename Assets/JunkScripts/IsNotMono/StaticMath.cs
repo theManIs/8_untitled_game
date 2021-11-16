@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,9 +45,20 @@ public class StaticMath
     {
         return new Vector3(Mathf.Ceil(somePoint.x) - extents.x, somePoint.y, Mathf.Ceil(somePoint.z) - extents.z);
     }
+
     public Vector3 PointToCellCenter(Vector3 somePoint, Vector3 extents)
     {
         return new Vector3(Mathf.Ceil(somePoint.x) - extents.x, HeightToHalfRoundFloat(somePoint.y) - extents.y, Mathf.Ceil(somePoint.z) - extents.z);
+    }
+
+    public Vector3 PointToCellCenterRounded(Vector3 somePoint, Vector3 extents)
+    {
+        return new Vector3(Mathf.Ceil(somePoint.x) - extents.x, HeightToHalfRoundFloat(RoundByThousand(somePoint.y)) - extents.y, Mathf.Ceil(somePoint.z) - extents.z);
+    }
+
+    public float RoundByThousand(float floatCut)
+    {
+        return Convert.ToSingle(Mathf.Round(floatCut * 100)) / 100f;
     }
 
     public Vector3 CellCenterToPointXZ(Vector3 somePoint)
@@ -68,7 +80,7 @@ public class StaticMath
     public Vector3 HeightToHalfRound(Vector3 height)
     {
 //        Debug.Log(height.y + " " + height.y % 1f + " " + (height.y % 1f > .5f));
-        height.y = height.y.Equals(0.0f) ? 0 : (Mathf.Abs(height.y % 1f) <= .5f ? Mathf.Ceil(height.y) - .5f : Mathf.Ceil(height.y));
+        height.y = height.y.Equals(0.0f) ? 0 : (Mathf.Abs(height.y % 1f) <= .5f && Mathf.Abs(height.y % 1f) > 0 ? Mathf.Ceil(height.y) - .5f : Mathf.Ceil(height.y));
 //        Debug.Log(height.y);
         return height;
     }

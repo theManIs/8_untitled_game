@@ -7,7 +7,10 @@ public class ClickPinpointer : MonoBehaviour
 {
     private PlayerRequestOrder _pro;
     private static Transform _squareMarker;
-//    private bool _mouseOver = true;
+    private StaticMath _sm = new StaticMath();
+    private LevelDissectorPlain _ldp;
+    private Vector3 _twoThousandth = new Vector3(0, .002f, 0);
+    private Vector3 _thisCell = Vector3.zero;
 
     public void OnMouseDown()
     {
@@ -43,13 +46,30 @@ public class ClickPinpointer : MonoBehaviour
         {
             if (hitinfo2.point.z > -18)
             {
-                float x = (float)(Math.Ceiling(hitinfo2.point.x) - .5f);
-                float z = (float)(Math.Ceiling(hitinfo2.point.z) - .5f);
+//                float x = (float)(Math.Ceiling(hitinfo2.point.x) - .5f);
+//                float z = (float)(Math.Ceiling(hitinfo2.point.z) - .5f);
+//                _squareMarker.position = new Vector3(x, hitinfo2.point.y + .002f, z);
 
-                _squareMarker.position = new Vector3(x, hitinfo2.point.y + .002f, z);
+//                Vector3 squareMarker = hitinfo2.point;
+                //                squareMarker.y = Mathf.Round(squareMarker.y * 100) / 100f;
+                Vector3 squareMarker = _sm.PointToCellCenterRounded(hitinfo2.point, new Vector3(.5f, 0, .5f));
+//                Debug.Log(squareMarker.y + " " + squareMarker);
+
+                _thisCell.Set((float)Math.Ceiling(hitinfo2.point.x), 0, (float)Math.Ceiling(hitinfo2.point.z));
+
+                foreach (Vector3 v3 in _ldp.AllCellsInOneArray)
+                {
+                    if (v3.x.Equals(_thisCell.x) && v3.z.Equals(_thisCell.z))
+                    {
+                        squareMarker.y = v3.y;
+//                        Debug.Log(squareMarker.y + " " + _thisCell);
+                    }
+                }
+
+//                squareMarker.y += .002f;
+                _squareMarker.position = squareMarker + _twoThousandth;
+
                 _squareMarker.GetComponent<MeshRenderer>().material.color = Color.green;
-
-//                    Debug.Log($"{hitinfo2.point}");
             }
         }
         
@@ -63,6 +83,7 @@ public class ClickPinpointer : MonoBehaviour
             _squareMarker = Instantiate(originalSquareMarker, Vector3.zero, originalSquareMarker.rotation);
         }
 
+        _ldp = FindObjectOfType<LevelDissectorPlain>();
         _pro = FindObjectOfType<PlayerRequestOrder>();
     }
 }

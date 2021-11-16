@@ -43,7 +43,14 @@ public class LevelDissectorPlain : MonoBehaviour
 
                 if (Physics.Raycast(new Ray(raySource, Vector3.down), out RaycastHit hitinfo, 1000))
                 {
-                    currentTile.y = hitinfo.point.y;
+
+                    currentTile.y = _sMath.RoundByThousand(hitinfo.point.y);
+
+//                    if (currentTile.x.Equals(5f) && currentTile.z.Equals(-3f))
+//                    {
+//                        Debug.Log(currentTile.y + " " + _sMath.HeightToHalfRound(currentTile).y + " " + (currentTile.y % 1f));
+//                        Debug.Break();
+//                    }
 
                     lv3.Add(_sMath.HeightToHalfRound(currentTile));
 //                    lv3.Add(currentTile);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -18,6 +19,7 @@ public class HighlitingAccuracy : MonoBehaviour
     private LevelDissectorPlain _ldp;
     private AccuracyCounter _ac = new AccuracyCounter();
     private StaticMath _sMath = new StaticMath();
+    private float _realAccuracy = 0f;
 
     public void OnEnable()
     {
@@ -28,6 +30,29 @@ public class HighlitingAccuracy : MonoBehaviour
         _ldp = FindObjectOfType<LevelDissectorPlain>();
 //        Debug.Log(_ldp.GetLevelDissected(_cc.LevelBounds));
         _ac = new AccuracyCounter{ Cells =  _ldp.GetLevelDissected(_cc.LevelMins, _cc.LevelBounds) };
+
+        StartCoroutine(ChangeAccuracyRoutine());
+    }
+
+    public IEnumerator ChangeAccuracyRoutine()
+    {
+        for (;;)
+        {
+            _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
+
+            if (_mainCapsulePlayers.Count(item => item.ThisInstanceReady) > 0)
+            {
+                MainCapsulePlayer activePlayer = _mainCapsulePlayers.First(item => item.ThisInstanceReady);
+                MainCapsulePlayer[] nonActivePlayers = _mainCapsulePlayers.Where(item => !item.ThisInstanceReady).ToArray();
+
+                foreach (MainCapsulePlayer capsule in nonActivePlayers)
+                {
+                    _realAccuracy = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
+                }
+            }
+
+            yield return new WaitForSeconds(1);
+        }
     }
 
     public void Update()
@@ -38,17 +63,19 @@ public class HighlitingAccuracy : MonoBehaviour
 
         if (_mainCapsulePlayers.Count(item => item.ThisInstanceReady) > 0)
         {
-
             MainCapsulePlayer activePlayer = _mainCapsulePlayers.First(item => item.ThisInstanceReady);
             Bounds bn = activePlayer.GetComponent<MeshRenderer>().bounds;
             Vector3 topShiftCoordinates = new Vector3(0, bn.size.y + accuracyCanvas.rect.height / 2, 0);
             MainCapsulePlayer[] nonActivePlayers = _mainCapsulePlayers.Where(item => !item.ThisInstanceReady).ToArray();
+
             foreach (MainCapsulePlayer capsule in nonActivePlayers)
             {
 
 //                Debug.Log(activePlayer.playerSquare + " " + _sMath.CellCenterToPointXZ(activePlayer.playerSquare) + " " + _sMath.CellCenterToPointXZ(capsule.playerSquare));
                 //                float realDistance = Mathf.Abs(capsule.playerSquare.x - activePlayer.playerSquare.x) + Mathf.Abs(capsule.playerSquare.z - activePlayer.playerSquare.z);
-                float realDistance = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
+//                float realDistance = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
+                float realDistance = _realAccuracy;
+
                 int showPercentage = Convert.ToInt32((1 - realDistance) * 100);
                 RectTransform can = _rtPool.Dequeue();
                 can.transform.SetParent(transform);
