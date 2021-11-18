@@ -51244,7 +51244,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh19638
+  m_Name: pb_Mesh24530
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -92889,11 +92889,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: PlayerInstances.Array.data[0].x
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: PlayerInstances.Array.data[0].z
-      value: 0
+      value: -4
       objectReference: {fileID: 0}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: PlayerInstances.Array.data[1].x
@@ -93097,7 +93097,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh19654
+  m_Name: pb_Mesh24546
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -93312,6 +93312,49 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 30820ffff6820b64f9d8c91e2817e2b9, type: 3}
+--- !u!1 &1730149735
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1730149737}
+  - component: {fileID: 1730149736}
+  m_Layer: 0
+  m_Name: PlayersAccomodation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1730149736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1730149735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31cb5264bae551c4d8519d359b66b242, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1730149737
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1730149735}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2100623262
 PrefabInstance:
   m_ObjectHideFlags: 0

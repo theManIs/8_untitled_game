@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MainCapsulePlayer : MonoBehaviour
 {
+    public event Action AccuracyRecount;
+
     public Transform OriginSquare;
     public Vector3 playerSquare;
     public bool ThisInstanceReady = false;
@@ -51,6 +53,8 @@ public class MainCapsulePlayer : MonoBehaviour
             _colorSquareInstance.transform.parent = OriginSquare;
         }
 
+        PlayersAccomodation.AddPlayer(this);
+
 //        ShowRange();
     }
 
@@ -83,6 +87,8 @@ public class MainCapsulePlayer : MonoBehaviour
         {
             _defaultMaterial.material.color = Color.red;
             ThisInstanceReady = true;
+
+            AccuracyRecount?.Invoke();
 
             ShowRange();
         }
@@ -197,6 +203,8 @@ public class MainCapsulePlayer : MonoBehaviour
 
                 _newElevation = Vector3.zero;
                 _deltaSum = 0f;
+
+                AccuracyRecount?.Invoke();
             }
         }
     }

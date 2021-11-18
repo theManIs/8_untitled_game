@@ -31,13 +31,14 @@ public class HighlitingAccuracy : MonoBehaviour
 //        Debug.Log(_ldp.GetLevelDissected(_cc.LevelBounds));
         _ac = new AccuracyCounter{ Cells =  _ldp.GetLevelDissected(_cc.LevelMins, _cc.LevelBounds) };
 
-        StartCoroutine(ChangeAccuracyRoutine());
+//        StartCoroutine(ChangeAccuracyRoutine());
     }
 
-    public IEnumerator ChangeAccuracyRoutine()
+    public void ChangeAccuracyRoutine()
+//    public IEnumerator ChangeAccuracyRoutine()
     {
-        for (;;)
-        {
+//        for (;;)
+//        {
             _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
 
             if (_mainCapsulePlayers.Count(item => item.ThisInstanceReady) > 0)
@@ -51,8 +52,8 @@ public class HighlitingAccuracy : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(1);
-        }
+//            yield return new WaitForSeconds(1);
+//        }
     }
 
     public void Update()
