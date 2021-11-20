@@ -6,10 +6,11 @@ public class MainCapsulePlayer : MonoBehaviour
 {
     public event Action AccuracyRecount;
 
-    public Transform OriginSquare;
+//    public Transform OriginSquare;
     public Vector3 playerSquare;
     public bool ThisInstanceReady = false;
     public Transform TransformToAnimate;
+    public CharacterInnateTraits InnateTraits;
 
     private MeshRenderer _defaultMaterial;
     private Color _defaultColor;
@@ -53,8 +54,9 @@ public class MainCapsulePlayer : MonoBehaviour
 
         if (_colorSquareInstance == null)
         {
-            _colorSquareInstance = Instantiate(OriginSquare, new Vector3(0, -100, 0), OriginSquare.rotation);
-            _colorSquareInstance.transform.parent = OriginSquare;
+            SquareInstance si = FindObjectOfType<SquareInstance>();
+            _colorSquareInstance = Instantiate(si.transform, new Vector3(0, -100, 0), si.transform.rotation);
+            _colorSquareInstance.transform.parent = si.transform;
         }
 
         _pfc = new PathFinderByCells { Cc = FindObjectOfType<ConstantConstraints>(), Ldap = _ldp, SMath = _smath, ColorSquareObject = _colorSquareInstance };
@@ -62,6 +64,12 @@ public class MainCapsulePlayer : MonoBehaviour
         _aft = new AnimateFuckingTrash();
 
 //        ShowRange();
+    }
+
+    public void SetInnateTraits(CharacterInnateTraits cit)
+    {
+        InnateTraits = cit;
+        _pfc.Cit = cit;
     }
 
     public void OnMouseEnter()

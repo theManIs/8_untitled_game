@@ -5,8 +5,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/CharacterInnateTraits", order = 1)]
 public class CharacterInnateTraits : ScriptableObject
 {
+    [Header("General")] 
+    public string UnitName;
+    public Vector3 PositionToInstantiate;
+    public GameObject StartingInstance;
+    public int MovementRange = 3;
+
     [Header("Experience")]
-    public int Experience = 10;
+    public int Experience = 1;
+    public int ExperiencePreviousLevel = 10;
     public int Level = 1;
     public int ExperienceNextLevel = 10;
 
@@ -62,9 +69,25 @@ public class CharacterInnateTraits : ScriptableObject
     public int CriticalModifierModifier = 50;
     public int CriticalModifierEquation => Agility * CriticalModifierModifier;
 
-    public int GetExperienceNextLevel(int n) => (int)(Mathf.Log(n) * 10 + 1);
+    public int GetExperienceNextLevel(int n)
+    {
+        int b = 5;
+        int result = 1;
 
-    public CharacterInnateTraits()
+        for (int i = 0; i < n; i++)
+        {
+            if (i % 3 == 0)
+            {
+                b += b / 2;
+            }
+
+            result += b;
+        }
+
+        return result;
+    }
+
+    public void Recount()
     {
         MeleeAttack = MeleeAttackEquation;
         PhysicalDefense = PhysicalDefenseEquation;
@@ -79,6 +102,7 @@ public class CharacterInnateTraits : ScriptableObject
         Dodging = DodgingEquation;
         RangedAttack = RangedAttackEquation;
         CriticalModifier = CriticalModifierEquation;
+        ExperiencePreviousLevel = GetExperienceNextLevel(Level);
         ExperienceNextLevel = GetExperienceNextLevel(Level);
     }
     

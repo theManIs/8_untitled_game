@@ -12,7 +12,7 @@ public class AnimateFuckingTrash
 //        Vector3 eulers = rot.eulerAngles;
 //        eulers.x = eulers.z = 0;
 //        rot = Quaternion.Euler(eulers);
-        Debug.Log(backwardRotation + " " + newTargetPoint + " " + originTransform.position + " " + rot.eulerAngles);
+//        Debug.Log(backwardRotation + " " + newTargetPoint + " " + originTransform.position + " " + rot.eulerAngles);
         originTransform.Rotate(Vector3.up, rot.eulerAngles.y);
     }
 }

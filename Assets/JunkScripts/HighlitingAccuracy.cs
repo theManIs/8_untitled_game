@@ -49,6 +49,8 @@ public class HighlitingAccuracy : MonoBehaviour
                 foreach (MainCapsulePlayer capsule in nonActivePlayers)
                 {
                     _realAccuracy = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
+                    _realAccuracy -= activePlayer.InnateTraits.Accuracy / 100f;
+//                    Debug.Log(_realAccuracy);
                 }
             }
 

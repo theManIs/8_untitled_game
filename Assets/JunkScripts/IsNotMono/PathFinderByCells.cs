@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Vector3 = UnityEngine.Vector3;
@@ -12,6 +10,7 @@ public class PathFinderByCells
     public StaticMath SMath;
     public LevelDissectorPlain Ldap;
     public Transform ColorSquareObject;
+    public CharacterInnateTraits Cit;
 
     private Transform[] _movementHighlight = new Transform[0];
     private HashSet<Vector3> _movementHashSet = new HashSet<Vector3>();
@@ -236,7 +235,7 @@ public class PathFinderByCells
         _showHideLock = true;
 
         Vector3 currentTile = tilePosition;
-        _movementHashSet = StepCellAdder(new HashSet<Vector3> { currentTile }, Cc.BaseMovementRange);
+        _movementHashSet = StepCellAdder(new HashSet<Vector3> { currentTile }, Cit.MovementRange);
         _movementHashSet = RemovePosition(RemoveOutOfBounds(_movementHashSet), currentTile);
 
         int iterator = 0;

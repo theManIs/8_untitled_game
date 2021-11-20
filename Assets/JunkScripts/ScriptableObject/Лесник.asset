@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4169611157c78d749aec5a35e4190ab5, type: 3}
+  m_Name: "\u041B\u0435\u0441\u043D\u0438\u043A"
+  m_EditorClassIdentifier: 
+  UnitName: "\u041B\u0435\u0441\u043D\u0438\u043A"
+  PositionToInstantiate: {x: 1, y: 1, z: -4}
+  StartingInstance: {fileID: 7716071829358373861, guid: 441116b784da07a4580c84e341123915, type: 3}
+  MovementRange: 2
+  Experience: 141
+  ExperiencePreviousLevel: 163
+  Level: 12
+  ExperienceNextLevel: 163
+  Strength: 10
+  Agility: 10
+  Dexterity: 0
+  Intelligence: 10
+  Vitality: 10
+  Luck: 10
+  MeleeAttack: 20
+  PhysicalDefense: 5
+  Health: 100
+  CriticalChance: 10
+  MagicalAttack: 30
+  MagicalDefense: 15
+  Manna: 100
+  Accuracy: 0
+  Initiative: 10
+  CastingRate: 0
+  Dodging: 10
+  RangedAttack: 0
+  CriticalModifier: 500
+  MeleeAttackModifier: 2
+  PhysicalDefenseModifier: 2
+  HealthModifier: 10
+  CriticalChanceModifier: 1
+  MagicalAttackModifier: 3
+  MagicalDefenseModifier: 2
+  MannaModifier: 10
+  AccuracyModifier: 1
+  InitiativeModifier: 1
+  CastingRateModifier: 1
+  DodgingModifier: 1
+  RangedAttackModifier: 2
+  CriticalModifierModifier: 50

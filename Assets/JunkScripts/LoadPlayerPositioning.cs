@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class LoadPlayerPositioning : MonoBehaviour
 {
-    public MainCapsulePlayer StartingWorkpiece;
-    public Vector3[] PlayerInstances;
-    public string[] PlayerNames;
+    public CharacterInnateTraits[] CharacterInnateTraits;
 
     private ConstantConstraints _cc;
 
@@ -17,11 +15,13 @@ public class LoadPlayerPositioning : MonoBehaviour
         StaticMath smath = new StaticMath();
         int iterator = 0;
 
-        foreach (Vector3 playerInstance in PlayerInstances)
+        foreach (CharacterInnateTraits cit in CharacterInnateTraits)
         {
-            Transform trn = Instantiate(StartingWorkpiece.transform, playerInstance, StartingWorkpiece.transform.rotation);
+            Transform trn = Instantiate(cit.StartingInstance.transform, cit.PositionToInstantiate, cit.StartingInstance.transform.rotation);
             trn.gameObject.SetActive(true);
             Vector3 verticalAlign = trn.position;
+            trn.GetComponent<MainCapsulePlayer>().SetInnateTraits(cit);
+            cit.Recount();
 
             verticalAlign = smath.PointToCellCenterXZ(verticalAlign, _cc.OneCellExtents);
 
@@ -32,10 +32,7 @@ public class LoadPlayerPositioning : MonoBehaviour
                 trn.position = verticalAlign;
             }
 
-            if (PlayerNames.Length > iterator)
-            {
-                trn.name = PlayerNames[iterator];
-            }
+            trn.name = cit.UnitName;
 
             iterator++;
         }

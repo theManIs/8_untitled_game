@@ -10,11 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4169611157c78d749aec5a35e4190ab5, type: 3}
-  m_Name: Data
+  m_Name: "\u0422\u043E\u0440\u0433\u043E\u0432\u0435\u0446 \u043A\u043E\u0448\u043C\u0430\u0440\u0430\u043C\u0438"
   m_EditorClassIdentifier: 
-  Experience: 10
+  UnitName: "\u0422\u043E\u0440\u0433\u043E\u0432\u0435\u0446 \u043A\u043E\u0448\u043C\u0430\u0440\u0430\u043C\u0438"
+  PositionToInstantiate: {x: 7, y: 1, z: -6}
+  StartingInstance: {fileID: 7716071829358373861, guid: 441116b784da07a4580c84e341123915, type: 3}
+  MovementRange: 3
+  Experience: 1
+  ExperiencePreviousLevel: 8
   Level: 1
-  ExperienceNextLevel: 0
+  ExperienceNextLevel: 8
   Strength: 10
   Agility: 10
   Dexterity: 10
