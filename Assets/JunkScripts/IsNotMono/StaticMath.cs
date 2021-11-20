@@ -95,31 +95,18 @@ public class StaticMath
         return Mathf.Abs(v1.x * (v2.z - v3.z) + v2.x * (v3.z - v1.z) + v3.x * (v1.z - v2.z)) / 2;
     }
 
-    public static void ShowHashSet(HashSet<Vector3> h3)
+    public Vector3 GetTargetCell(Vector3[] allMapCells, Vector3 tryToFind)
     {
-        string debubMessage = "";
-        int iterator = 0;
-
-        foreach (Vector3 vector3 in h3)
+        foreach (Vector3 v3 in allMapCells)
         {
-            debubMessage += $"{iterator} {vector3} \n";
-            iterator++;
+            if (v3.x.Equals(tryToFind.x) && v3.z.Equals(tryToFind.z))
+            {
+                return v3;
+            }
         }
 
-        Debug.Log(debubMessage);
+        return Vector3.zero;
     }
 
-    public static void ShowHashSet(List<Vector3> h3)
-    {
-        string debubMessage = "";
-        int iterator = 0;
 
-        foreach (Vector3 vector3 in h3)
-        {
-            debubMessage += $"{iterator} {vector3} \n";
-            iterator++;
-        }
-
-        Debug.Log(debubMessage);
-    }
 }

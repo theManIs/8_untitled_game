@@ -375,16 +375,28 @@ public class AccuracyCounter
         List<Vector3> interL = new List<Vector3>();
         Vector3 sp = sm.PointToCellCenterXZ(sourcePoint, new Vector3(.5f, 0, .5f));
         Vector3 tp = sm.PointToCellCenterXZ(targetPoint, new Vector3(.5f, 0, .5f));
+//        Vector3 sp = sourcePoint;
+//        Vector3 tp = targetPoint;
 
-        sp.x -= .5f;
-        tp.x -= .5f;
+        int quarter = sm.GetRelativeQuarter(sourcePoint, targetPoint);
+//
+        sp.x = quarter == 4 || quarter == 2 ? sp.x - .25f : sp.x;
+        tp.x = quarter == 4 || quarter == 2 ? tp.x - .25f : sp.x;
+        sp.z = quarter == 4 || quarter == 2 ? sp.z - .25f : sp.z;
+        tp.z = quarter == 4 || quarter == 2 ? tp.z - .25f : tp.z;
+//        sp.x -= .5f;
+//        tp.x -= .5f;
 
         RecountEquation(sp, tp);
         //        Debug.Log(ScoreStraightZ(sp) + " " + ScoreStraightZ(tp));
-        Debug.DrawLine(ScoreStraightZ(sp), ScoreStraightZ(tp), Color.magenta); 
-        
-        sp.x += 1f;
-        tp.x += 1f;
+        Debug.DrawLine(ScoreStraightZ(sp), ScoreStraightZ(tp), Color.magenta);
+
+        sp.x = quarter == 4 || quarter == 2 ? sp.x + .5f : sp.x;
+        tp.x = quarter == 4 || quarter == 2 ? tp.x + .5f : sp.x;
+        sp.z = quarter == 4 || quarter == 2 ? sp.z + .5f : sp.z;
+        tp.z = quarter == 4 || quarter == 2 ? tp.z + .5f : tp.z;
+//        sp.x += 1f;
+//        tp.x += 1f;
 
         interL.AddRange(GetIntersection(sourcePoint, targetPoint));
 
@@ -406,6 +418,7 @@ public class AccuracyCounter
 
     public float GetStraightLineAccuracy(Vector3 sourcePoint, Vector3 targetPoint)
     {
+//        Debug.Log(sourcePoint + " " + targetPoint);
         List<Vector3> intersectIt = DrawTheWholeThing(sourcePoint, targetPoint);
         List<Vector3> obstaclesList = StripClosestCells(sourcePoint, targetPoint, intersectIt);
         List<Vector3[]> obstaclesImpact = ScoreImpact(obstaclesList);
@@ -414,7 +427,7 @@ public class AccuracyCounter
     }
 
     public float GetStraightLineAccuracyX(Vector3 sourcePoint, Vector3 targetPoint)
-    {
+    { 
         float finiteElevation = 0;
         bool fullObstacle = false;
 
