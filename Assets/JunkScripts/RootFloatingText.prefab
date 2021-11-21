@@ -235,5 +235,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaacee316e0716046b2cc295a1430d2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DestroyTime: 1
+  DestroyTime: 2
   DefaultOffset: {x: 0, y: 1, z: 0}
+  RandomizeIntensity: {x: 0.5, y: 0, z: 0}

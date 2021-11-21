@@ -18,6 +18,7 @@ public class CharacterInnateTraits : ScriptableObject
     public Color ActiveColor = Color.green;
     public Color HoverColor = Color.cyan;
     public float BaseDamage = 15;
+    public int TemporaryHealth = 25;
 
     [Header("Experience")]
     public int Experience = 1;
@@ -37,7 +38,7 @@ public class CharacterInnateTraits : ScriptableObject
     [Header("Secondary Traits")]
     public int MeleeAttack = 0;
     public int PhysicalDefense = 0;
-    public int Health = 0;
+    public int Health = 2;
     public int CriticalChance = 0;
     public int MagicalAttack = 0;
     public int MagicalDefense = 0;
@@ -54,7 +55,7 @@ public class CharacterInnateTraits : ScriptableObject
     public int MeleeAttackEquation => Strength * MeleeAttackModifier;
     public int PhysicalDefenseModifier = 2;
     public int PhysicalDefenseEquation => Vitality / PhysicalDefenseModifier;
-    public int HealthModifier = 10;
+    public int HealthModifier = 2;
     public int HealthEquation => Vitality * HealthModifier;
     public int CriticalChanceModifier = 1;
     public int CriticalChanceEquation => Luck * CriticalChanceModifier;
@@ -112,6 +113,7 @@ public class CharacterInnateTraits : ScriptableObject
         CriticalModifier = CriticalModifierEquation;
         ExperiencePreviousLevel = GetExperienceNextLevel(Level);
         ExperienceNextLevel = GetExperienceNextLevel(Level);
+        TemporaryHealth = Health;
     }
     
 }

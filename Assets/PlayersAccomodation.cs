@@ -20,4 +20,19 @@ public class PlayersAccomodation : MonoBehaviour
 
         ListOfPlayers.Add(mcp);
     }
+
+    public static void DelPlayer(MainCapsulePlayer mcp)
+    {
+        HighlitingAccuracy ac = FindObjectOfType<HighlitingAccuracy>();
+
+        mcp.AccuracyRecount -= ac.ChangeAccuracyRoutine;
+
+        foreach (MainCapsulePlayer mcpExisted in ListOfPlayers)
+        {
+            mcp.CheckInInstance -= mcpExisted.InstanceCheckOut;
+            mcpExisted.CheckInInstance -= mcp.InstanceCheckOut;
+        }
+
+        ListOfPlayers.Remove(mcp);
+    }
 }

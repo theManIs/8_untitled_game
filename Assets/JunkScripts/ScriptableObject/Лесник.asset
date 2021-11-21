@@ -21,6 +21,8 @@ MonoBehaviour:
   BaseColor: {r: 1, g: 0, b: 0, a: 1}
   ActiveColor: {r: 0, g: 1, b: 0, a: 1}
   HoverColor: {r: 0, g: 1, b: 1, a: 1}
+  BaseDamage: 15
+  TemporaryHealth: -55
   Experience: 141
   ExperiencePreviousLevel: 163
   Level: 12
@@ -33,7 +35,7 @@ MonoBehaviour:
   Luck: 10
   MeleeAttack: 20
   PhysicalDefense: 5
-  Health: 100
+  Health: 20
   CriticalChance: 10
   MagicalAttack: 30
   MagicalDefense: 15
@@ -46,7 +48,7 @@ MonoBehaviour:
   CriticalModifier: 500
   MeleeAttackModifier: 2
   PhysicalDefenseModifier: 2
-  HealthModifier: 10
+  HealthModifier: 2
   CriticalChanceModifier: 1
   MagicalAttackModifier: 3
   MagicalDefenseModifier: 2
