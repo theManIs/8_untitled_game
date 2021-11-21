@@ -23,6 +23,7 @@ MonoBehaviour:
   HoverColor: {r: 0, g: 1, b: 1, a: 1}
   BaseDamage: 15
   TemporaryHealth: 20
+  ShotSound: {fileID: 8300000, guid: 693ff5c28bda9b6409128cb13a6c5707, type: 3}
   Experience: 1
   ExperiencePreviousLevel: 8
   Level: 1

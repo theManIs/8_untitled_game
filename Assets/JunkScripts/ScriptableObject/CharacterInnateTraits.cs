@@ -19,6 +19,7 @@ public class CharacterInnateTraits : ScriptableObject
     public Color HoverColor = Color.cyan;
     public float BaseDamage = 15;
     public int TemporaryHealth = 25;
+    public AudioClip ShotSound;
 
     [Header("Experience")]
     public int Experience = 1;

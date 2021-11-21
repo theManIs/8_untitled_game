@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -17,8 +19,9 @@ public class MainCapsulePlayer : MonoBehaviour
     public float TemporaryAccuracy = 0;
     public bool TemporaryHideAccuracy = false;
     public GameObject FloatingText;
+    public Transform ShotgunToAppear;
 
-//    private Color _defaultColor;
+    //    private Color _defaultColor;
     private PlayerRequestOrder _playerRequestOrder;
     
 //    private ConstantConstraints _cCon;
@@ -35,7 +38,8 @@ public class MainCapsulePlayer : MonoBehaviour
     private Vector3 _changedEndPoint;
 //    private Vector3 _newElevation;
     private Bounds _meshBounds;
-    private MainCapsulePlayer _lastAim;
+//    private MainCapsulePlayer _lastAim;
+    private bool _hiddenShotGun = false;
 
 //    private HashSet<Vector3> _movementHashSet = new HashSet<Vector3>();
 //    private Vector3 _previousPosition = Vector3.zero;
@@ -93,15 +97,34 @@ public class MainCapsulePlayer : MonoBehaviour
         }
     }
 
-    public void SetShotTo()
+    public void SetShotTo(MainCapsulePlayer mcpAggressor)
     {
 
         GameObject go = Instantiate(FloatingText, transform.position, Quaternion.identity, transform);
-        go.GetComponentInChildren<TextMeshPro>().text = Convert.ToInt32(_lastAim.InnateTraits.BaseDamage).ToString();
+        go.GetComponentInChildren<TextMeshPro>().text = Convert.ToInt32(mcpAggressor.InnateTraits.BaseDamage).ToString();
         TemporaryHideAccuracy = true;
-        InnateTraits.TemporaryHealth -= (int)_lastAim.InnateTraits.BaseDamage;
+        InnateTraits.TemporaryHealth -= (int)mcpAggressor.InnateTraits.BaseDamage;
 
+        AudioSource asa = gameObject.GetComponent<AudioSource>();
+        asa.clip = InnateTraits.ShotSound;
+        asa.Play();
+    }
+
+    public IEnumerator GunRoutine(MainCapsulePlayer mcpAggressor)
+    {
+
+        mcpAggressor.KickOne(this);
+        yield return new WaitForSeconds(.4f);
+        mcpAggressor.ShotgunToAppear.gameObject.SetActive(true);
+        _hiddenShotGun = true;
+//        Debug.Log("show it " + ShotgunToAppear.gameObject.activeSelf);
+        yield return new WaitForSeconds(.6f);
+        SetShotTo(mcpAggressor);
         Invoke(nameof(ShowAccuracy), FloatingText.GetComponent<FloatingText>().DestroyTime);
+        //        Debug.Log("shot it ");
+        yield return new WaitForSeconds(.6f);
+        mcpAggressor.ShotgunToAppear.gameObject.SetActive(false);
+//        Debug.Log("hide it " + ShotgunToAppear.gameObject.activeSelf);
     }
 
     void OnMouseDown()
@@ -110,15 +133,11 @@ public class MainCapsulePlayer : MonoBehaviour
 
         foreach (MainCapsulePlayer mcp in PlayersAccomodation.ListOfPlayers)
         {
-            if (mcp.ThisInstanceReady && mcp != this /*&& InnateTraits.BaseColor != mcp.InnateTraits.BaseColor*/)
+            if (mcp.ThisInstanceReady && mcp != this && InnateTraits.BaseColor != mcp.InnateTraits.BaseColor)
             {
                 normalChange = false;
-                _lastAim = mcp;
 
-                mcp.KickOne(this);
-
-                Invoke(nameof(SetShotTo), 1);
-
+                StartCoroutine(GunRoutine(mcp));
 //                Debug.Break();
             }
         }
@@ -139,7 +158,7 @@ public class MainCapsulePlayer : MonoBehaviour
 
                 AccuracyRecount?.Invoke();
 
-                _pfc.ShowRange(playerSquare);
+                _pfc.ShowRange( playerSquare, PlayersAccomodation.GetSquarePositions().ToArray());
             }
         }
     }

@@ -117,7 +117,9 @@ MonoBehaviour:
   InnateTraits: {fileID: 0}
   DefaultMaterial: {fileID: 0}
   TemporaryAccuracy: 0
+  TemporaryHideAccuracy: 0
   FloatingText: {fileID: 8805554905477963298, guid: da98984f161b95f41b3774059176020f, type: 3}
+  ShotgunToAppear: {fileID: 0}
 --- !u!54 &2815004784904408900
 Rigidbody:
   m_ObjectHideFlags: 0

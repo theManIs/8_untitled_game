@@ -214,7 +214,7 @@ public class PathFinderByCells
     public void ResetRange(Vector3 tilePosition)
     {
         HideRange();
-        ShowRange(tilePosition);
+        ShowRange(tilePosition, PlayersAccomodation.GetSquarePositions().ToArray());
     }
 
     public void HideRange()
@@ -230,13 +230,12 @@ public class PathFinderByCells
         }
     }
 
-    public void ShowRange(Vector3 tilePosition)
+    public void ShowRange(Vector3 currentTile, Vector3[] tilePosition)
     {
         _showHideLock = true;
 
-        Vector3 currentTile = tilePosition;
         _movementHashSet = StepCellAdder(new HashSet<Vector3> { currentTile }, Cit.MovementRange);
-        _movementHashSet = RemovePosition(RemoveOutOfBounds(_movementHashSet), currentTile);
+        _movementHashSet = RemovePosition(RemoveOutOfBounds(_movementHashSet), tilePosition);
 
         int iterator = 0;
         Transform si = ColorSquareObject;
@@ -266,9 +265,12 @@ public class PathFinderByCells
         return setToCut;
     }
 
-    private HashSet<Vector3> RemovePosition(HashSet<Vector3> setToCut, Vector3 posToRemove)
+    private HashSet<Vector3> RemovePosition(HashSet<Vector3> setToCut, Vector3[] posToRemove)
     {
-        setToCut.RemoveWhere(point => point.x.Equals(posToRemove.x) && point.z.Equals(posToRemove.z));
+        foreach (Vector3 pv3 in posToRemove)
+        {
+            setToCut.RemoveWhere(point => point.x.Equals(pv3.x) && point.z.Equals(pv3.z));
+        }
 
         return setToCut;
     }
