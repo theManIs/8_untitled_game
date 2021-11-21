@@ -67,7 +67,7 @@ public class HighlitingAccuracy : MonoBehaviour
         if (_mainCapsulePlayers.Count(item => item.ThisInstanceReady) > 0)
         {
             MainCapsulePlayer activePlayer = _mainCapsulePlayers.First(item => item.ThisInstanceReady);
-            Bounds bn = activePlayer.GetComponent<MeshRenderer>().bounds;
+            Bounds bn = activePlayer.GetComponent<Collider>().bounds;
             Vector3 topShiftCoordinates = new Vector3(0, bn.size.y + accuracyCanvas.rect.height / 2, 0);
             MainCapsulePlayer[] nonActivePlayers = _mainCapsulePlayers.Where(item => !item.ThisInstanceReady).ToArray();
 

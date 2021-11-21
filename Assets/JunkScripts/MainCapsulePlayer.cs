@@ -5,15 +5,16 @@ using UnityEngine;
 public class MainCapsulePlayer : MonoBehaviour
 {
     public event Action AccuracyRecount;
+    public event Action CheckInInstance;
 
 //    public Transform OriginSquare;
     public Vector3 playerSquare;
     public bool ThisInstanceReady = false;
     public Transform TransformToAnimate;
     public CharacterInnateTraits InnateTraits;
+    public SkinnedMeshRenderer DefaultMaterial;
 
-    private MeshRenderer _defaultMaterial;
-    private Color _defaultColor;
+//    private Color _defaultColor;
     private PlayerRequestOrder _playerRequestOrder;
     
 //    private ConstantConstraints _cCon;
@@ -42,8 +43,6 @@ public class MainCapsulePlayer : MonoBehaviour
 
     public void OnEnable()
     {
-        _defaultMaterial = GetComponentInChildren<MeshRenderer>();
-        _defaultColor = _defaultMaterial.material.color;
         _playerRequestOrder = FindObjectOfType<PlayerRequestOrder>();
 //        _cCon = FindObjectOfType<ConstantConstraints>();
 //        _xCell = _cCon.OneCell.x;
@@ -70,13 +69,14 @@ public class MainCapsulePlayer : MonoBehaviour
     {
         InnateTraits = cit;
         _pfc.Cit = cit;
+        DefaultMaterial.material.color = InnateTraits.BaseColor;
     }
 
     public void OnMouseEnter()
     {
         if (!ThisInstanceReady)
         {
-            _defaultMaterial.material.color = Color.cyan;
+            DefaultMaterial.material.color = InnateTraits.HoverColor;
         }
     }
 
@@ -84,22 +84,21 @@ public class MainCapsulePlayer : MonoBehaviour
     {
         if (!ThisInstanceReady)
         {
-            _defaultMaterial.material.color = _defaultColor;
+            DefaultMaterial.material.color = InnateTraits.BaseColor;
         }
     }
 
     void OnMouseDown()
     {
-        if (_defaultMaterial.material.color == Color.red)
+        if (DefaultMaterial.material.color == InnateTraits.ActiveColor)
         {
-            _defaultMaterial.material.color = _defaultColor;
-            ThisInstanceReady = false;
-
-            _pfc.HideRange();
+            InstanceCheckOut();
         }
         else
         {
-            _defaultMaterial.material.color = Color.red;
+            CheckInInstance?.Invoke();
+
+            DefaultMaterial.material.color = InnateTraits.ActiveColor;
             ThisInstanceReady = true;
             _playerRequestOrder.NewMove = false;
 
@@ -107,6 +106,14 @@ public class MainCapsulePlayer : MonoBehaviour
 
             _pfc.ShowRange(playerSquare);
         }
+    }
+
+    public void InstanceCheckOut()
+    {
+        DefaultMaterial.material.color = InnateTraits.BaseColor;
+        ThisInstanceReady = false;
+
+        _pfc.HideRange();
     }
 
 //    void OnMouseExit()

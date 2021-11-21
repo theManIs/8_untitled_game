@@ -11,5 +11,13 @@ public class PlayersAccomodation : MonoBehaviour
         HighlitingAccuracy ac = FindObjectOfType<HighlitingAccuracy>();
 
         mcp.AccuracyRecount += ac.ChangeAccuracyRoutine;
+
+        foreach (MainCapsulePlayer mcpExisted in ListOfPlayers)
+        {
+            mcp.CheckInInstance += mcpExisted.InstanceCheckOut;
+            mcpExisted.CheckInInstance += mcp.InstanceCheckOut;
+        }
+
+        ListOfPlayers.Add(mcp);
     }
 }

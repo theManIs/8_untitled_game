@@ -10,6 +10,9 @@ public class CharacterInnateTraits : ScriptableObject
     public Vector3 PositionToInstantiate;
     public GameObject StartingInstance;
     public int MovementRange = 3;
+    public Color BaseColor = Color.blue;
+    public Color ActiveColor = Color.green;
+    public Color HoverColor = Color.cyan;
 
     [Header("Experience")]
     public int Experience = 1;
