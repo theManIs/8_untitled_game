@@ -39,7 +39,8 @@ public class HighlitingAccuracy : MonoBehaviour
     {
 //        for (;;)
 //        {
-            _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
+//            _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
+        _mainCapsulePlayers = PlayersAccomodation.ListOfPlayers.ToArray();
 
             if (_mainCapsulePlayers.Count(item => item.ThisInstanceReady) > 0)
             {
@@ -71,7 +72,8 @@ public class HighlitingAccuracy : MonoBehaviour
             _ac = new AccuracyCounter { Cells = _ldp.GetLevelDissected(_ldp.LevelMins, _ldp.LevelBounds) };
         }
 
-        _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
+        _mainCapsulePlayers = PlayersAccomodation.ListOfPlayers.ToArray();
+//        _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
 
         _rtPool.RefreshQueue();
 
@@ -99,7 +101,6 @@ public class HighlitingAccuracy : MonoBehaviour
 
                 if (capsule.TemporaryHideAccuracy)
                 {
-
                     can.gameObject.SetActive(false);
                 }
                 else

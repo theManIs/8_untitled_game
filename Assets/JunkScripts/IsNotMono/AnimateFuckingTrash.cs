@@ -32,4 +32,9 @@ public class AnimateFuckingTrash
     {
         A.SetTrigger("Kick");
     }
+    public void SetDeathState(bool state = false)
+    {
+        A.SetBool("Dead", state);
+//        Debug.Log("dead");
+    }
 }

@@ -105,10 +105,11 @@ public class MainCapsulePlayer : MonoBehaviour
                 mcp.KickOne(this);
 
                 GameObject go = Instantiate(FloatingText, transform.position, Quaternion.identity, transform);
-                go.GetComponentInChildren<TextMeshPro>().text = Convert.ToInt32(InnateTraits.BaseDamage).ToString();
+                go.GetComponentInChildren<TextMeshPro>().text = Convert.ToInt32(mcp.InnateTraits.BaseDamage).ToString();
                 TemporaryHideAccuracy = true;
+                InnateTraits.TemporaryHealth -= (int)mcp.InnateTraits.BaseDamage;
 
-                Invoke(nameof(ShowAccuracy), 1);
+                Invoke(nameof(ShowAccuracy), FloatingText.GetComponent<FloatingText>().DestroyTime);
 //                Debug.Break();
             }
         }
@@ -162,6 +163,15 @@ public class MainCapsulePlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (InnateTraits.TemporaryHealth <= 0)
+        {
+            _aft.SetDeathState(true);
+            PlayersAccomodation.DelPlayer(this);
+            GetComponent<Rigidbody>().isKinematic = true;
+            GetComponent<Collider>().enabled = false;
+            this.enabled = false;
+        }
+
         playerSquare = _smath.PointToCellCenterRounded(transform.position, new Vector3(.5f, 0, .5f));
 //        if (ThisInstanceReady)
 //        {
