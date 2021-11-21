@@ -58,7 +58,7 @@ public class MainCapsulePlayer : MonoBehaviour
             _colorSquareInstance.transform.parent = si.transform;
         }
 
-        _pfc = new PathFinderByCells { Cc = FindObjectOfType<ConstantConstraints>(), Ldap = _ldp, SMath = _smath, ColorSquareObject = _colorSquareInstance };
+        _pfc = new PathFinderByCells { Ldap = _ldp, SMath = _smath, ColorSquareObject = _colorSquareInstance };
         PlayersAccomodation.AddPlayer(this);
         _aft = new AnimateFuckingTrash();
 

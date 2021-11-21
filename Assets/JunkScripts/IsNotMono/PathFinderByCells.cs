@@ -6,7 +6,7 @@ using Vector3 = UnityEngine.Vector3;
 
 public class PathFinderByCells
 {
-    public ConstantConstraints Cc;
+//    public ConstantConstraints Cc;
     public StaticMath SMath;
     public LevelDissectorPlain Ldap;
     public Transform ColorSquareObject;
@@ -23,8 +23,8 @@ public class PathFinderByCells
 
         Vector3 newPosition = Vector3.zero;
         Vector3 curTile = new Vector3(curPosition.x, curPosition.y, curPosition.z);
-        Vector3 xMovement = new Vector3(Cc.OneCellStep * Math.Sign(xDistance), 0, 0);
-        Vector3 zMovement = new Vector3(0, 0, Cc.OneCellStep * Math.Sign(zDistance));
+        Vector3 xMovement = new Vector3(Ldap.MaxStepDistance * Math.Sign(xDistance), 0, 0);
+        Vector3 zMovement = new Vector3(0, 0, Ldap.MaxStepDistance * Math.Sign(zDistance));
         Vector3 xNextStep = xMovement + curTile;
         Vector3 zNextStep = zMovement + curTile;
         bool hasXMovement = false;
@@ -57,23 +57,23 @@ public class PathFinderByCells
             {
                 if (Math.Abs(xDistance) > Math.Abs(zDistance))
                 {
-                    newPosition = curPosition + new Vector3(Cc.OneCellStep * Math.Sign(xDistance), 0, 0);
+                    newPosition = curPosition + new Vector3(Ldap.MaxStepDistance * Math.Sign(xDistance), 0, 0);
                 }
                 else
                 {
-                    newPosition = curPosition + new Vector3(0, 0, Cc.OneCellStep * Math.Sign(zDistance));
+                    newPosition = curPosition + new Vector3(0, 0, Ldap.MaxStepDistance * Math.Sign(zDistance));
                 }
             }
             else
             {
                 if (xDistance > .1f || xDistance < -.1f)
                 {
-                    newPosition = curPosition + new Vector3(Cc.OneCellStep * Math.Sign(xDistance), 0, 0);
+                    newPosition = curPosition + new Vector3(Ldap.MaxStepDistance * Math.Sign(xDistance), 0, 0);
 
                 }
                 else if (zDistance > .1f || zDistance < -.1f)
                 {
-                    newPosition = curPosition + new Vector3(0, 0, Cc.OneCellStep * Math.Sign(zDistance));
+                    newPosition = curPosition + new Vector3(0, 0, Ldap.MaxStepDistance * Math.Sign(zDistance));
                 }
             }
         }
@@ -81,12 +81,12 @@ public class PathFinderByCells
         //        else if (true)
         {
             //            Debug.Log((xMovement + curTile) + " " + (zMovement + curTile) + " " + curPosition);
-            newPosition = curPosition + new Vector3(Cc.OneCellStep * Math.Sign(xDistance), 0, 0);
+            newPosition = curPosition + new Vector3(Ldap.MaxStepDistance * Math.Sign(xDistance), 0, 0);
         }
         else if (hasZMovement)
         {
             //            Debug.Log((xMovement + curTile) + " " + (zMovement + curTile) + " " + curPosition);
-            newPosition = curPosition + new Vector3(0, 0, Cc.OneCellStep * Math.Sign(zDistance));
+            newPosition = curPosition + new Vector3(0, 0, Ldap.MaxStepDistance * Math.Sign(zDistance));
         }
         //        else
         //        {
@@ -121,7 +121,7 @@ public class PathFinderByCells
         Vector3 directedStep = ClampBounds(pointInSpace + direction * shiftDistance);
 
 //        Debug.Log(Math.Abs(directedStep.y - pointInSpace.y) + " " + directedStep.y + " " + pointInSpace.y);
-        if (Math.Abs(directedStep.y - pointInSpace.y) <= Cc.MaxStepHeight)
+        if (Math.Abs(directedStep.y - pointInSpace.y) <= Ldap.MaxStepHeight)
         {
             generalPath.Add(directedStep);
         }
@@ -131,8 +131,8 @@ public class PathFinderByCells
 
     public Vector3 ClampBounds(Vector3 pointInSpace)
     {
-        pointInSpace.x = Mathf.Clamp(pointInSpace.x, Cc.MinX,Cc.MinX + Cc.MapSizeX);
-        pointInSpace.z = Mathf.Clamp(pointInSpace.z, Cc.MinZ,Cc.MinZ + Cc.MapSizeZ);
+        pointInSpace.x = Mathf.Clamp(pointInSpace.x, Ldap.MinX, Ldap.MinX + Ldap.MapSizeX);
+        pointInSpace.z = Mathf.Clamp(pointInSpace.z, Ldap.MinZ, Ldap.MinZ + Ldap.MapSizeZ);
 
 //        Debug.Log(pointInSpace + " " + SMath.GetTargetCell(Ldap.AllCellsInOneArray, SMath.CellCenterToPointXZ(pointInSpace)).y + " " + SMath.RoundByThousand(GetElevation(pointInSpace)));
 //        pointInSpace.y = GetElevation(pointInSpace);
@@ -164,7 +164,7 @@ public class PathFinderByCells
 
         foreach (Vector3 recursiVector3 in _previousHashSet)
         {
-            interHashSet = AddToHashSet(interHashSet, recursiVector3, Cc.MaxStepDistance);
+            interHashSet = AddToHashSet(interHashSet, recursiVector3, Ldap.MaxStepDistance);
         }
 
         if (iterator != 0)
@@ -260,8 +260,8 @@ public class PathFinderByCells
 
     private HashSet<Vector3> RemoveOutOfBounds(HashSet<Vector3> setToCut)
     {
-        setToCut.RemoveWhere(point => point.x <= Cc.MinX || point.x >= Cc.MaxX);
-        setToCut.RemoveWhere(point => point.z <= Cc.MinZ || point.z >= Cc.MaxZ);
+        setToCut.RemoveWhere(point => point.x <= Ldap.MinX || point.x >= Ldap.MaxX);
+        setToCut.RemoveWhere(point => point.z <= Ldap.MinZ || point.z >= Ldap.MaxZ);
 
         return setToCut;
     }

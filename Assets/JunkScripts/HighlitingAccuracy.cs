@@ -15,7 +15,7 @@ public class HighlitingAccuracy : MonoBehaviour
     private MainCapsulePlayer[] _mainCapsulePlayers;
     private MainCapsulePlayer _lastActivePlayer;
     private PoolOfRectTransform _rtPool;
-    private ConstantConstraints _cc;
+//    private ConstantConstraints _cc;
     private LevelDissectorPlain _ldp;
     private AccuracyCounter _ac = new AccuracyCounter();
     private StaticMath _sMath = new StaticMath();
@@ -26,10 +26,10 @@ public class HighlitingAccuracy : MonoBehaviour
         _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
         _rtPool = new PoolOfRectTransform();
         _rtPool.SetCanonicalRect(accuracyCanvas);
-        _cc = FindObjectOfType<ConstantConstraints>();
+//        _cc = FindObjectOfType<ConstantConstraints>();
         _ldp = FindObjectOfType<LevelDissectorPlain>();
 //        Debug.Log(_ldp.GetLevelDissected(_cc.LevelBounds));
-        _ac = new AccuracyCounter{ Cells =  _ldp.GetLevelDissected(_cc.LevelMins, _cc.LevelBounds) };
+        _ac = new AccuracyCounter{ Cells =  _ldp.GetLevelDissected(_ldp.LevelMins, _ldp.LevelBounds) };
 
 //        StartCoroutine(ChangeAccuracyRoutine());
     }
@@ -60,6 +60,11 @@ public class HighlitingAccuracy : MonoBehaviour
 
     public void Update()
     {
+        if (_ac.Cells.Length == 0)
+        {
+            _ac = new AccuracyCounter { Cells = _ldp.GetLevelDissected(_ldp.LevelMins, _ldp.LevelBounds) };
+        }
+
         _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
 
         _rtPool.RefreshQueue();
@@ -86,7 +91,7 @@ public class HighlitingAccuracy : MonoBehaviour
 
                 TextMeshProUGUI tx = can.GetComponentInChildren<TextMeshProUGUI>();
 
-                if (realDistance <= _cc.RangedWeaponDistance)
+                if (realDistance <= capsule.InnateTraits.WeaponRange)
                 {
                     can.gameObject.SetActive(true);
                     tx.text = showPercentage.ToString("D") + (showPercentage >= 100 ? "" : "%");

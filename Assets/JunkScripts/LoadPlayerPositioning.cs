@@ -5,13 +5,14 @@ using UnityEngine;
 public class LoadPlayerPositioning : MonoBehaviour
 {
     public CharacterInnateTraits[] CharacterInnateTraits;
+    public LevelDissectorPlain Ldp;
 
-    private ConstantConstraints _cc;
+    private bool _initOnce = false;
 
     // Start is called before the first frame update
-    void Start()
+    void LocatePlayers()
     {
-        _cc = FindObjectOfType<ConstantConstraints>();
+//        _cc = FindObjectOfType<ConstantConstraints>();
         StaticMath smath = new StaticMath();
         int iterator = 0;
 
@@ -23,9 +24,9 @@ public class LoadPlayerPositioning : MonoBehaviour
             trn.GetComponent<MainCapsulePlayer>().SetInnateTraits(cit);
             cit.Recount();
 
-            verticalAlign = smath.PointToCellCenterXZ(verticalAlign, _cc.OneCellExtents);
+            verticalAlign = smath.PointToCellCenterXZ(verticalAlign, Ldp.OneCellExtents);
 
-            if (Physics.Raycast(new Ray(trn.position + _cc.OneCellVerticalRayBar, Vector3.down), out RaycastHit hitinfo))
+            if (Physics.Raycast(new Ray(trn.position + Ldp.OneCellVerticalRayBar, Vector3.down), out RaycastHit hitinfo))
             {
                 verticalAlign.y = hitinfo.point.y + 1;
 
@@ -41,6 +42,14 @@ public class LoadPlayerPositioning : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (!_initOnce)
+        {
+            if (Ldp.AllCellsInOneArray.Length != 0)
+            {
+                LocatePlayers();
+
+                _initOnce = true;
+            }
+        }
     }
 }
