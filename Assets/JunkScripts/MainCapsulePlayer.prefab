@@ -111,6 +111,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75cfc93bffcacb3499d06324fbc0a160, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSquare: {x: 0, y: 0, z: 0}
+  ThisInstanceReady: 0
+  TransformToAnimate: {fileID: 0}
+  InnateTraits: {fileID: 0}
+  DefaultMaterial: {fileID: 0}
+  TemporaryAccuracy: 0
+  FloatingText: {fileID: 8805554905477963298, guid: da98984f161b95f41b3774059176020f, type: 3}
 --- !u!54 &2815004784904408900
 Rigidbody:
   m_ObjectHideFlags: 0

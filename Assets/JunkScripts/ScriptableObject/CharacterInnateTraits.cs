@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/CharacterInnateTraits", order = 1)]
 public class CharacterInnateTraits : ScriptableObject
 {
+    [Header("Animation")]
+    public float AnimationPlaySpeed = 1f;
+
     [Header("General")] 
     public string UnitName;
     public Vector3 PositionToInstantiate;
@@ -14,6 +17,7 @@ public class CharacterInnateTraits : ScriptableObject
     public Color BaseColor = Color.blue;
     public Color ActiveColor = Color.green;
     public Color HoverColor = Color.cyan;
+    public float BaseDamage = 15;
 
     [Header("Experience")]
     public int Experience = 1;

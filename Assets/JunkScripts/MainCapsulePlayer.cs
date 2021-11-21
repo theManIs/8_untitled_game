@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class MainCapsulePlayer : MonoBehaviour
@@ -13,6 +14,9 @@ public class MainCapsulePlayer : MonoBehaviour
     public Transform TransformToAnimate;
     public CharacterInnateTraits InnateTraits;
     public SkinnedMeshRenderer DefaultMaterial;
+    public float TemporaryAccuracy = 0;
+    public bool TemporaryHideAccuracy = false;
+    public GameObject FloatingText;
 
 //    private Color _defaultColor;
     private PlayerRequestOrder _playerRequestOrder;
@@ -60,7 +64,7 @@ public class MainCapsulePlayer : MonoBehaviour
 
         _pfc = new PathFinderByCells { Ldap = _ldp, SMath = _smath, ColorSquareObject = _colorSquareInstance };
         PlayersAccomodation.AddPlayer(this);
-        _aft = new AnimateFuckingTrash();
+        _aft = new AnimateFuckingTrash { A = GetComponentInChildren<Animator>() };
 
 //        ShowRange();
     }
@@ -90,22 +94,49 @@ public class MainCapsulePlayer : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (DefaultMaterial.material.color == InnateTraits.ActiveColor)
+        bool normalChange = true;
+
+        foreach (MainCapsulePlayer mcp in PlayersAccomodation.ListOfPlayers)
         {
-            InstanceCheckOut();
+            if (mcp.ThisInstanceReady && mcp != this /*&& InnateTraits.BaseColor != mcp.InnateTraits.BaseColor*/)
+            {
+                normalChange = false;
+
+                mcp.KickOne(this);
+
+                GameObject go = Instantiate(FloatingText, transform.position, Quaternion.identity, transform);
+                go.GetComponentInChildren<TextMeshPro>().text = Convert.ToInt32(InnateTraits.BaseDamage).ToString();
+                TemporaryHideAccuracy = true;
+
+                Invoke(nameof(ShowAccuracy), 1);
+//                Debug.Break();
+            }
         }
-        else
+
+        if (normalChange)
         {
-            CheckInInstance?.Invoke();
+            if (DefaultMaterial.material.color == InnateTraits.ActiveColor)
+            {
+                InstanceCheckOut();
+            }
+            else
+            {
+                CheckInInstance?.Invoke();
 
-            DefaultMaterial.material.color = InnateTraits.ActiveColor;
-            ThisInstanceReady = true;
-            _playerRequestOrder.NewMove = false;
+                DefaultMaterial.material.color = InnateTraits.ActiveColor;
+                ThisInstanceReady = true;
+                _playerRequestOrder.NewMove = false;
 
-            AccuracyRecount?.Invoke();
+                AccuracyRecount?.Invoke();
 
-            _pfc.ShowRange(playerSquare);
+                _pfc.ShowRange(playerSquare);
+            }
         }
+    }
+
+    public void ShowAccuracy()
+    {
+        TemporaryHideAccuracy = false;
     }
 
     public void InstanceCheckOut()
@@ -114,6 +145,13 @@ public class MainCapsulePlayer : MonoBehaviour
         ThisInstanceReady = false;
 
         _pfc.HideRange();
+    }
+
+    public void KickOne(MainCapsulePlayer mcp)
+    {
+        _aft.SetKickState();
+        _aft.RotateToMovementDirection(TransformToAnimate, mcp.transform.position);
+//        Debug.Log("KIck one");
     }
 
 //    void OnMouseExit()
@@ -171,6 +209,7 @@ public class MainCapsulePlayer : MonoBehaviour
                 _moveToNextCell = true;
 
                 _aft.RotateToMovementDirection(TransformToAnimate, _nextCellCenter);
+                _aft.SetMoveState(true);
             }
             else
             {
@@ -182,6 +221,8 @@ public class MainCapsulePlayer : MonoBehaviour
                 {
                     _pfc.ResetRange(playerSquare);
                 }
+
+                _aft.SetMoveState(false);
             }
 
             AccuracyRecount?.Invoke();
@@ -191,7 +232,7 @@ public class MainCapsulePlayer : MonoBehaviour
         {
             _deltaSum += Time.deltaTime;
 
-            transform.position = Vector3.Lerp(_startCellPosition, _nextCellCenter, _deltaSum);
+            transform.position = Vector3.Lerp(_startCellPosition, _nextCellCenter, _deltaSum * InnateTraits.AnimationPlaySpeed);
 
             if (_nextCellCenter == transform.position)
             {

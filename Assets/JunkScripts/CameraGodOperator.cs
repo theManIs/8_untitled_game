@@ -17,7 +17,6 @@ public class CameraGodOperator : MonoBehaviour
     public bool ReverseVertical = false;
     public bool ReverseAxis = false;
 
-
     private InputGodTransporter _input;
     private bool _autoLock = false;
 

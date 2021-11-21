@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4169611157c78d749aec5a35e4190ab5, type: 3}
   m_Name: "\u041B\u0435\u0441\u043D\u0438\u043A"
   m_EditorClassIdentifier: 
+  AnimationPlaySpeed: 0.6
   UnitName: "\u041B\u0435\u0441\u043D\u0438\u043A"
   PositionToInstantiate: {x: 1, y: 1, z: -4}
   StartingInstance: {fileID: 7756516489144957285, guid: 32679dd72c68cd1428dbdb963bc3945e, type: 3}
   MovementRange: 2
+  WeaponRange: 5
   BaseColor: {r: 1, g: 0, b: 0, a: 1}
   ActiveColor: {r: 0, g: 1, b: 0, a: 1}
   HoverColor: {r: 0, g: 1, b: 1, a: 1}

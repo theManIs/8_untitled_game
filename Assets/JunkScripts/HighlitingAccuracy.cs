@@ -50,12 +50,18 @@ public class HighlitingAccuracy : MonoBehaviour
                 {
                     _realAccuracy = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
                     _realAccuracy -= activePlayer.InnateTraits.Accuracy / 100f;
+                    capsule.TemporaryAccuracy = GetAccuracyPercentage(_realAccuracy);
 //                    Debug.Log(_realAccuracy);
                 }
             }
 
 //            yield return new WaitForSeconds(1);
 //        }
+    }
+
+    public float GetAccuracyPercentage(float realDistance)
+    {
+        return Convert.ToInt32((1 - realDistance) * 100);
     }
 
     public void Update()
@@ -91,14 +97,22 @@ public class HighlitingAccuracy : MonoBehaviour
 
                 TextMeshProUGUI tx = can.GetComponentInChildren<TextMeshProUGUI>();
 
-                if (realDistance <= capsule.InnateTraits.WeaponRange)
+                if (capsule.TemporaryHideAccuracy)
                 {
-                    can.gameObject.SetActive(true);
-                    tx.text = showPercentage.ToString("D") + (showPercentage >= 100 ? "" : "%");
+
+                    can.gameObject.SetActive(false);
                 }
                 else
                 {
-                    can.gameObject.SetActive(false);
+                    if (realDistance <= capsule.InnateTraits.WeaponRange)
+                    {
+                        can.gameObject.SetActive(true);
+                        tx.text = showPercentage.ToString("D") + (showPercentage >= 100 ? "" : "%");
+                    }
+                    else
+                    {
+                        can.gameObject.SetActive(false);
+                    }
                 }
             }
 
