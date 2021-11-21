@@ -30,7 +30,7 @@ public class AnimateFuckingTrash
 
     public void SetKickState()
     {
-        A.SetTrigger("Kick");
+        A.SetTrigger("Gun");
     }
     public void SetDeathState(bool state = false)
     {

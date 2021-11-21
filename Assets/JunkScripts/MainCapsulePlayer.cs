@@ -35,6 +35,7 @@ public class MainCapsulePlayer : MonoBehaviour
     private Vector3 _changedEndPoint;
 //    private Vector3 _newElevation;
     private Bounds _meshBounds;
+    private MainCapsulePlayer _lastAim;
 
 //    private HashSet<Vector3> _movementHashSet = new HashSet<Vector3>();
 //    private Vector3 _previousPosition = Vector3.zero;
@@ -92,6 +93,17 @@ public class MainCapsulePlayer : MonoBehaviour
         }
     }
 
+    public void SetShotTo()
+    {
+
+        GameObject go = Instantiate(FloatingText, transform.position, Quaternion.identity, transform);
+        go.GetComponentInChildren<TextMeshPro>().text = Convert.ToInt32(_lastAim.InnateTraits.BaseDamage).ToString();
+        TemporaryHideAccuracy = true;
+        InnateTraits.TemporaryHealth -= (int)_lastAim.InnateTraits.BaseDamage;
+
+        Invoke(nameof(ShowAccuracy), FloatingText.GetComponent<FloatingText>().DestroyTime);
+    }
+
     void OnMouseDown()
     {
         bool normalChange = true;
@@ -101,15 +113,12 @@ public class MainCapsulePlayer : MonoBehaviour
             if (mcp.ThisInstanceReady && mcp != this /*&& InnateTraits.BaseColor != mcp.InnateTraits.BaseColor*/)
             {
                 normalChange = false;
+                _lastAim = mcp;
 
                 mcp.KickOne(this);
 
-                GameObject go = Instantiate(FloatingText, transform.position, Quaternion.identity, transform);
-                go.GetComponentInChildren<TextMeshPro>().text = Convert.ToInt32(mcp.InnateTraits.BaseDamage).ToString();
-                TemporaryHideAccuracy = true;
-                InnateTraits.TemporaryHealth -= (int)mcp.InnateTraits.BaseDamage;
+                Invoke(nameof(SetShotTo), 1);
 
-                Invoke(nameof(ShowAccuracy), FloatingText.GetComponent<FloatingText>().DestroyTime);
 //                Debug.Break();
             }
         }
