@@ -32,6 +32,8 @@ public class LevelDissectorPlain : MonoBehaviour
 
     void OnEnable()
     {
+        gameObject.AddComponent<ClickPinpointer>();
+
 //        _cc = FindObjectOfType<ConstantConstraints>();
 
 //        AllCellsInOneArray = GetLevelDissected(_cc.LevelMins,_cc.LevelBounds);

@@ -7,8 +7,6 @@ public class LoadPlayerPositioning : MonoBehaviour
     public CharacterInnateTraits[] CharacterInnateTraits;
     public LevelDissectorPlain Ldp;
 
-    private bool _initOnce = false;
-
     // Start is called before the first frame update
     void LocatePlayers()
     {
@@ -18,7 +16,11 @@ public class LoadPlayerPositioning : MonoBehaviour
 
         foreach (CharacterInnateTraits cit in CharacterInnateTraits)
         {
-            Transform trn = Instantiate(cit.StartingInstance.transform, cit.PositionToInstantiate, cit.StartingInstance.transform.rotation);
+            Vector3 posToInst = cit.PositionToInstantiate;
+            posToInst.x += Ldp.MinX;
+            posToInst.z += Ldp.MinZ;
+
+            Transform trn = Instantiate(cit.StartingInstance.transform, posToInst, cit.StartingInstance.transform.rotation);
             trn.gameObject.SetActive(true);
             Vector3 verticalAlign = trn.position;
             trn.GetComponent<MainCapsulePlayer>().SetInnateTraits(cit);
@@ -39,17 +41,23 @@ public class LoadPlayerPositioning : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public IEnumerator PutPlayersOnPositions()
     {
-        if (!_initOnce)
+        for(;;)
         {
+            yield return new WaitForSeconds(.05f);
+
             if (Ldp.AllCellsInOneArray.Length != 0)
             {
                 LocatePlayers();
-
-                _initOnce = true;
+                
+                break;
             }
         }
+    }
+
+    public void Start()
+    {
+        StartCoroutine(PutPlayersOnPositions());
     }
 }

@@ -5,12 +5,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/CharacterInnateTraits", order = 1)]
 public class CharacterInnateTraits : ScriptableObject
 {
+    [Header("Positioning")]
+    public Vector3 PositionToInstantiate;
+
     [Header("Animation")]
     public float AnimationPlaySpeed = 1f;
 
     [Header("General")] 
     public string UnitName;
-    public Vector3 PositionToInstantiate;
     public GameObject StartingInstance;
     public int MovementRange = 3;
     public int WeaponRange = 5;
@@ -95,6 +97,20 @@ public class CharacterInnateTraits : ScriptableObject
         }
 
         return result;
+    }
+    public float CountDistance(Vector3 activePlayer, Vector3 capsule)
+    {
+        return Mathf.Abs(capsule.x - activePlayer.x) + Mathf.Abs(capsule.z - activePlayer.z);
+    }
+
+    public bool CheckDistance(Vector3 activePlayer, Vector3 capsule)
+    {
+        return CountDistance(activePlayer, capsule) <= WeaponRange;
+    }
+
+    public bool IsEnemy(CharacterInnateTraits innateTraits)
+    {
+        return BaseColor != innateTraits.BaseColor;
     }
 
     public void Recount()

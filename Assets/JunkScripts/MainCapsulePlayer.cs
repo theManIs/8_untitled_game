@@ -39,7 +39,7 @@ public class MainCapsulePlayer : MonoBehaviour
 //    private Vector3 _newElevation;
     private Bounds _meshBounds;
 //    private MainCapsulePlayer _lastAim;
-    private bool _hiddenShotGun = false;
+//    private bool _hiddenShotGun = false;
 
 //    private HashSet<Vector3> _movementHashSet = new HashSet<Vector3>();
 //    private Vector3 _previousPosition = Vector3.zero;
@@ -116,10 +116,11 @@ public class MainCapsulePlayer : MonoBehaviour
         mcpAggressor.KickOne(this);
         yield return new WaitForSeconds(.4f);
         mcpAggressor.ShotgunToAppear.gameObject.SetActive(true);
-        _hiddenShotGun = true;
+//        _hiddenShotGun = true;
 //        Debug.Log("show it " + ShotgunToAppear.gameObject.activeSelf);
         yield return new WaitForSeconds(.6f);
         SetShotTo(mcpAggressor);
+        AccuracyRecount?.Invoke();
         Invoke(nameof(ShowAccuracy), FloatingText.GetComponent<FloatingText>().DestroyTime);
         //        Debug.Log("shot it ");
         yield return new WaitForSeconds(.6f);
@@ -137,7 +138,10 @@ public class MainCapsulePlayer : MonoBehaviour
             {
                 normalChange = false;
 
-                StartCoroutine(GunRoutine(mcp));
+                if (InnateTraits.CheckDistance(playerSquare, mcp.playerSquare))
+                {
+                    StartCoroutine(GunRoutine(mcp));
+                }
 //                Debug.Break();
             }
         }
@@ -156,16 +160,18 @@ public class MainCapsulePlayer : MonoBehaviour
                 ThisInstanceReady = true;
                 _playerRequestOrder.NewMove = false;
 
-                AccuracyRecount?.Invoke();
-
                 _pfc.ShowRange( playerSquare, PlayersAccomodation.GetSquarePositions().ToArray());
             }
+
+            AccuracyRecount?.Invoke();
         }
     }
 
     public void ShowAccuracy()
     {
         TemporaryHideAccuracy = false;
+        
+        AccuracyRecount?.Invoke();
     }
 
     public void InstanceCheckOut()
@@ -263,7 +269,7 @@ public class MainCapsulePlayer : MonoBehaviour
                 _aft.SetMoveState(false);
             }
 
-            AccuracyRecount?.Invoke();
+//            AccuracyRecount?.Invoke();
         }
 
         if (_moveToNextCell)

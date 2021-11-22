@@ -31,47 +31,69 @@ public class HighlitingAccuracy : MonoBehaviour
 //        Debug.Log(_ldp.GetLevelDissected(_cc.LevelBounds));
         _ac = new AccuracyCounter{ Cells =  _ldp.GetLevelDissected(_ldp.LevelMins, _ldp.LevelBounds) };
 
-//        StartCoroutine(ChangeAccuracyRoutine());
+        StartCoroutine(RecountAccuracyCounter());
     }
 
-    public void ChangeAccuracyRoutine()
-//    public IEnumerator ChangeAccuracyRoutine()
-    {
-//        for (;;)
-//        {
-//            _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
-        _mainCapsulePlayers = PlayersAccomodation.ListOfPlayers.ToArray();
-
-            if (_mainCapsulePlayers.Count(item => item.ThisInstanceReady) > 0)
-            {
-                MainCapsulePlayer activePlayer = _mainCapsulePlayers.First(item => item.ThisInstanceReady);
-                MainCapsulePlayer[] nonActivePlayers = _mainCapsulePlayers.Where(item => !item.ThisInstanceReady).ToArray();
-
-                foreach (MainCapsulePlayer capsule in nonActivePlayers)
-                {
-                    _realAccuracy = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
-                    _realAccuracy -= activePlayer.InnateTraits.Accuracy / 100f;
-                    capsule.TemporaryAccuracy = GetAccuracyPercentage(_realAccuracy);
-//                    Debug.Log(_realAccuracy);
-                }
-            }
-
-//            yield return new WaitForSeconds(1);
-//        }
-    }
+//    public void ChangeAccuracyRoutineDeprecated()
+////    public IEnumerator ChangeAccuracyRoutine()
+//    {
+//        Debug.Log("ChangeAccuracyRoutine");
+////        for (;;)
+////        {
+////            _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
+//        _mainCapsulePlayers = PlayersAccomodation.ListOfPlayers.ToArray();
+//
+//            if (_mainCapsulePlayers.Count(item => item.ThisInstanceReady) > 0)
+//            {
+//                MainCapsulePlayer activePlayer = _mainCapsulePlayers.First(item => item.ThisInstanceReady);
+//                MainCapsulePlayer[] nonActivePlayers = _mainCapsulePlayers.Where(item => !item.ThisInstanceReady).ToArray();
+//
+//                foreach (MainCapsulePlayer capsule in nonActivePlayers)
+//                {
+//                    _realAccuracy = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
+//                    _realAccuracy -= activePlayer.InnateTraits.Accuracy / 100f;
+//                    capsule.TemporaryAccuracy = GetAccuracyPercentage(_realAccuracy);
+////                    Debug.Log(_realAccuracy);
+//                }
+//            }
+//
+////            yield return new WaitForSeconds(1);
+////        }
+//    }
 
     public float GetAccuracyPercentage(float realDistance)
     {
         return Convert.ToInt32((1 - realDistance) * 100);
     }
 
-    public void Update()
+    public IEnumerator RecountAccuracyCounter()
     {
-        if (_ac.Cells.Length == 0)
+        for (;;)
         {
-            _ac = new AccuracyCounter { Cells = _ldp.GetLevelDissected(_ldp.LevelMins, _ldp.LevelBounds) };
+            yield return new WaitForSeconds(.05f);
+
+            if (_ac.Cells.Length == 0)
+            {
+                _ac = new AccuracyCounter { Cells = _ldp.GetLevelDissected(_ldp.LevelMins, _ldp.LevelBounds) };
+//                Debug.Log("RecountAccuracyCounter");
+                break;
+            }
         }
 
+    }
+
+    public float CountAccuracy(MainCapsulePlayer activePlayer, MainCapsulePlayer capsule)
+    {
+        float realAccuracy = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
+        realAccuracy -= activePlayer.InnateTraits.Accuracy / 100f;
+        capsule.TemporaryAccuracy = GetAccuracyPercentage(_realAccuracy);
+
+        return Convert.ToInt32((1 - realAccuracy) * 100);
+    }
+
+    public void ChangeAccuracyRoutine()
+    {
+//        Debug.Log("ChangeAccuracyRoutine");
         _mainCapsulePlayers = PlayersAccomodation.ListOfPlayers.ToArray();
 //        _mainCapsulePlayers = FindObjectsOfType<MainCapsulePlayer>();
 
@@ -88,33 +110,34 @@ public class HighlitingAccuracy : MonoBehaviour
             {
 
 //                Debug.Log(activePlayer.playerSquare + " " + _sMath.CellCenterToPointXZ(activePlayer.playerSquare) + " " + _sMath.CellCenterToPointXZ(capsule.playerSquare));
-                //                float realDistance = Mathf.Abs(capsule.playerSquare.x - activePlayer.playerSquare.x) + Mathf.Abs(capsule.playerSquare.z - activePlayer.playerSquare.z);
+                float realDistance = capsule.InnateTraits.CountDistance(activePlayer.playerSquare, capsule.playerSquare);
 //                float realDistance = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
-                float realDistance = _realAccuracy;
+//                float realDistance = _realAccuracy;
+                float showPercentage = CountAccuracy(activePlayer, capsule);
 
-                int showPercentage = Convert.ToInt32((1 - realDistance) * 100);
+//                int showPercentage = Convert.ToInt32((1 - realDistance) * 100);
                 RectTransform can = _rtPool.Dequeue();
                 can.transform.SetParent(transform);
                 can.transform.position = capsule.playerSquare + topShiftCoordinates;
 
                 TextMeshProUGUI tx = can.GetComponentInChildren<TextMeshProUGUI>();
 
-                if (capsule.TemporaryHideAccuracy)
-                {
-                    can.gameObject.SetActive(false);
-                }
-                else
-                {
-                    if (realDistance <= capsule.InnateTraits.WeaponRange)
+//                if (capsule.TemporaryHideAccuracy)
+//                {
+//                    can.gameObject.SetActive(false);
+//                }
+//                else
+//                {
+                    if (realDistance <= capsule.InnateTraits.WeaponRange && !capsule.TemporaryHideAccuracy && activePlayer.InnateTraits.IsEnemy(capsule.InnateTraits))
                     {
                         can.gameObject.SetActive(true);
-                        tx.text = showPercentage.ToString("D") + (showPercentage >= 100 ? "" : "%");
+                        tx.text = showPercentage.ToString("F0") + (showPercentage >= 100 ? "" : "%");
                     }
                     else
                     {
                         can.gameObject.SetActive(false);
                     }
-                }
+//                }
             }
 
             _lastActivePlayer = activePlayer;

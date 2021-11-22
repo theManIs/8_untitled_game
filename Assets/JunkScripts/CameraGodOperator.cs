@@ -7,11 +7,13 @@ public class CameraGodOperator : MonoBehaviour
 {
     public Color ColorAutoFocus = Color.blue;
     public float LockDistanceZ = 3f;
-    public float Speed = .2f;
+    public float LockDistanceY = 2f;
+    public float Speed = .1f;
     public Vector4 CameraClamp = new Vector4(0,10, -4, 6);
-    public Vector4 CameraRotationSet0 = new Vector4(1, 1, 1, 1);
     public LevelDissectorPlain Ldap;
     public int BoundsOffset = 3;
+
+    public Transform MainCamera;
 
     public bool ReverseHorizontal = false;
     public bool ReverseVertical = false;
@@ -32,17 +34,24 @@ public class CameraGodOperator : MonoBehaviour
         {
             foreach (MainCapsulePlayer mcp in PlayersAccomodation.ListOfPlayers)
             {
-                if (mcp.InnateTraits != null && mcp.InnateTraits.BaseColor == ColorAutoFocus)
+                if (!_autoLock && mcp.InnateTraits != null && mcp.InnateTraits.BaseColor == ColorAutoFocus)
                 {
                     _autoLock = true;
 
-                    Vector3 cameraLockOn = transform.position;
+                    Vector3 cameraLockOn = MainCamera.position;
 
                     cameraLockOn.x = mcp.transform.position.x;
                     cameraLockOn.z = mcp.transform.position.z - LockDistanceZ;
+                    cameraLockOn.y = mcp.transform.position.y + LockDistanceY;
 
-                    transform.position = cameraLockOn;
-//                    Debug.Log(cameraLockOn);    
+                    MainCamera.position = cameraLockOn;
+//                    Debug.Log(Vector3.Distance(mcp.transform.position, MainCamera.position) + " " + mcp.transform.position);
+//
+//                    Vector3 v3 = transform.localPosition;
+//                    v3.z += 40;
+//                    transform.localPosition = v3;
+
+//                    Debug.Log(Vector3.Distance(mcp.playerSquare, transform.position));
                 }
             }
 
@@ -66,17 +75,52 @@ public class CameraGodOperator : MonoBehaviour
 
             if (ReverseAxis)
             {
-                newPos = transform.position + new Vector3(_input.Vr * Speed * axisOrientation, 0, _input.Hr * Speed * verticalOrientation);
+                newPos = MainCamera.position + new Vector3(_input.Vr * Speed * axisOrientation, 0, _input.Hr * Speed * verticalOrientation);
             }
             else
             {
-                newPos = transform.position + new Vector3(_input.Hr * Speed * axisOrientation, 0, _input.Vr * Speed * verticalOrientation);
+                newPos = MainCamera.position + new Vector3(_input.Hr * Speed * axisOrientation, 0, _input.Vr * Speed * verticalOrientation);
             }
 
             newPos.x = Mathf.Clamp(newPos.x, CameraClamp.x, CameraClamp.y);
             newPos.z = Mathf.Clamp(newPos.z, CameraClamp.z, CameraClamp.w);
 
-            transform.position = newPos;
+            MainCamera.position = newPos;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            transform.Rotate(Vector3.up, 90);
+
+            if (transform.rotation.eulerAngles.y == 90)
+            {
+                ReverseAxis = true;
+                ReverseVertical = true;
+                ReverseHorizontal = false;
+            }
+
+            if (transform.rotation.eulerAngles.y == 180)
+            {
+                ReverseAxis = false;
+                ReverseVertical = true;
+                ReverseHorizontal = true;
+            }
+
+            if (transform.rotation.eulerAngles.y == 270)
+            {
+                ReverseAxis = true;
+                ReverseVertical = false;
+                ReverseHorizontal = true;
+            }
+
+            if (transform.rotation.eulerAngles.y == 0)
+            {
+                ReverseAxis = false;
+                ReverseVertical = false;
+                ReverseHorizontal = false;
+            }
+
+            CameraClampOnDemand(transform.position);
         }
     }
 
@@ -85,7 +129,8 @@ public class CameraGodOperator : MonoBehaviour
         newPos.x = Mathf.Clamp(newPos.x, CameraClamp.x, CameraClamp.y);
         newPos.z = Mathf.Clamp(newPos.z, CameraClamp.z, CameraClamp.w);
 
-        transform.position = newPos;
+        MainCamera.position = newPos;
 
     }
+
 }

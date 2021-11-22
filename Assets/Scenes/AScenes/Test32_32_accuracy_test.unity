@@ -255,6 +255,7 @@ GameObject:
   - component: {fileID: 371357606}
   - component: {fileID: 371357605}
   - component: {fileID: 371357604}
+  - component: {fileID: 371357610}
   m_Layer: 0
   m_Name: 32_maunt
   m_TagString: Untagged
@@ -51116,13 +51117,41 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &371357610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371357603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b50ab8f0abdff84ba2d346d3d2f70f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OneCell: {x: 1, y: 0, z: 1}
+  OneCellExtents: {x: 0.5, y: 0, z: 0.5}
+  OneCellVerticalRayBar: {x: 0, y: 100, z: 0}
+  MaxStepHeight: 0.5
+  MaxStepDistance: 1
+  RangedWeaponDistance: 5
+  MinX: 0
+  MinZ: 0
+  MaxX: 0
+  MaxZ: 0
+  MapSizeX: 0
+  MapSizeZ: 0
+  LevelBounds: {x: 0, y: 0, z: 0}
+  LevelMins: {x: 0, y: 0, z: 0}
+  LevelMaxs: {x: 0, y: 0, z: 0}
+  AllCellsInOneArray: []
 --- !u!43 &541816507
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh19638
+  m_Name: pb_Mesh19642
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -51295,14 +51324,13 @@ GameObject:
   - component: {fileID: 586287096}
   - component: {fileID: 586287095}
   - component: {fileID: 586287102}
-  - component: {fileID: 586287101}
   m_Layer: 0
   m_Name: 32_32
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &586287095
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -92675,18 +92703,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &586287101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 586287094}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3c14a1fb0ae74041926ca507a592030, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &586287102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92777,7 +92793,7 @@ PrefabInstance:
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: Ldp
       value: 
-      objectReference: {fileID: 586287102}
+      objectReference: {fileID: 371357610}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: _cc
       value: 
@@ -92828,16 +92844,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: CharacterInnateTraits.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: CharacterInnateTraits.Array.data[0]
       value: 
-      objectReference: {fileID: 11400000, guid: aa576dcea20dff04a94917f050d137fc, type: 2}
+      objectReference: {fileID: 11400000, guid: 7ccf9a7061bf4b5438d4b9c33db5f24c, type: 2}
     - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
       propertyPath: CharacterInnateTraits.Array.data[1]
       value: 
-      objectReference: {fileID: 11400000, guid: 7ccf9a7061bf4b5438d4b9c33db5f24c, type: 2}
+      objectReference: {fileID: 11400000, guid: 6b64fd72bdb04a4479891e7ea42db8bc, type: 2}
+    - target: {fileID: 5385609831166048589, guid: 6f776968991310f4999b49b7e6575064, type: 3}
+      propertyPath: CharacterInnateTraits.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: aa576dcea20dff04a94917f050d137fc, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6f776968991310f4999b49b7e6575064, type: 3}
 --- !u!1 &890147808
@@ -92996,7 +93016,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh19654
+  m_Name: pb_Mesh19658
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -93161,14 +93181,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1189500140690840539, guid: 30820ffff6820b64f9d8c91e2817e2b9, type: 3}
+    - target: {fileID: 1770707634, guid: 30820ffff6820b64f9d8c91e2817e2b9, type: 3}
       propertyPath: Ldap
       value: 
-      objectReference: {fileID: 586287102}
-    - target: {fileID: 1189500140690840539, guid: 30820ffff6820b64f9d8c91e2817e2b9, type: 3}
-      propertyPath: BoundsOffset
-      value: 3
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 371357610}
     - target: {fileID: 8896136411013012645, guid: 30820ffff6820b64f9d8c91e2817e2b9, type: 3}
       propertyPath: m_Name
       value: CameraPivotPoint

@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4169611157c78d749aec5a35e4190ab5, type: 3}
   m_Name: "\u041B\u0435\u0441\u043D\u0438\u043A"
   m_EditorClassIdentifier: 
+  PositionToInstantiate: {x: 17, y: 1, z: 13}
+  PointToSpawn: {fileID: 0}
   AnimationPlaySpeed: 0.6
   UnitName: "\u041B\u0435\u0441\u043D\u0438\u043A"
-  PositionToInstantiate: {x: 1, y: 1, z: -4}
   StartingInstance: {fileID: 7756516489144957285, guid: 32679dd72c68cd1428dbdb963bc3945e, type: 3}
   MovementRange: 2
   WeaponRange: 5
@@ -22,7 +23,7 @@ MonoBehaviour:
   ActiveColor: {r: 0, g: 1, b: 0, a: 1}
   HoverColor: {r: 0, g: 1, b: 1, a: 1}
   BaseDamage: 15
-  TemporaryHealth: -10
+  TemporaryHealth: 20
   ShotSound: {fileID: 8300000, guid: 693ff5c28bda9b6409128cb13a6c5707, type: 3}
   Experience: 141
   ExperiencePreviousLevel: 163

@@ -14,7 +14,6 @@ public class ClickPinpointer : MonoBehaviour
 
     public void OnMouseDown()
     {
-
         MeshRenderer cl = GetComponent<MeshRenderer>();
 
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitinfo))
