@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: "\u041A\u043E\u043B\u0434\u0443\u043D"
   m_EditorClassIdentifier: 
   PositionToInstantiate: {x: 16, y: 1, z: 14}
-  PointToSpawn: {fileID: 0}
   AnimationPlaySpeed: 0.6
-  UnitName: "\u0422\u043E\u0440\u0433\u043E\u0432\u0435\u0446 \u043A\u043E\u0448\u043C\u0430\u0440\u0430\u043C\u0438"
+  UnitName: "\u041A\u043E\u043B\u0434\u0443\u043D"
   StartingInstance: {fileID: 7756516489144957285, guid: 32679dd72c68cd1428dbdb963bc3945e, type: 3}
   MovementRange: 3
   WeaponRange: 5
@@ -23,7 +22,7 @@ MonoBehaviour:
   ActiveColor: {r: 0, g: 1, b: 0, a: 1}
   HoverColor: {r: 0, g: 1, b: 1, a: 1}
   BaseDamage: 15
-  TemporaryHealth: 20
+  TemporaryHealth: -90
   ShotSound: {fileID: 8300000, guid: 693ff5c28bda9b6409128cb13a6c5707, type: 3}
   Experience: 1
   ExperiencePreviousLevel: 8
@@ -37,8 +36,8 @@ MonoBehaviour:
   Luck: 10
   MeleeAttack: 20
   PhysicalDefense: 5
-  Health: 20
-  CriticalChance: 10
+  Health: 30
+  CriticalChance: 50
   MagicalAttack: 30
   MagicalDefense: 15
   Manna: 100

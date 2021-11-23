@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/CharacterInnateTraits", order = 1)]
 public class CharacterInnateTraits : ScriptableObject
@@ -113,23 +115,43 @@ public class CharacterInnateTraits : ScriptableObject
         return BaseColor != innateTraits.BaseColor;
     }
 
+    public int GetCriticalDamage()
+    {
+        return Convert.ToInt32(RangedAttack * CriticalModifier / 100f);
+    }
+
+    public bool IsCriticalDamage()
+    {
+        return Random.Range(0, 100) <= CriticalChance;
+    }
+
+    public bool DoHit(float onlyObstacleAccuracy)
+    {
+        return Random.Range(0, 100) <= onlyObstacleAccuracy + Accuracy;
+    }
+
+    public float CountAccuracy(float accuracy)
+    {
+        return accuracy + Accuracy;
+    }
+
     public void Recount()
     {
-        MeleeAttack = MeleeAttackEquation;
-        PhysicalDefense = PhysicalDefenseEquation;
-        Health = HealthEquation;
-        CriticalChance = CriticalChanceEquation;
-        MagicalAttack = MagicalAttackEquation;
-        MagicalDefense = MagicalDefenseEquation;
-        Manna = MannaEquation;
-        Accuracy = AccuracyEquation;
-        Initiative = InitiativeEquation;
-        CastingRate = CastingRateEquation;
-        Dodging = DodgingEquation;
-        RangedAttack = RangedAttackEquation;
-        CriticalModifier = CriticalModifierEquation;
-        ExperiencePreviousLevel = GetExperienceNextLevel(Level);
-        ExperienceNextLevel = GetExperienceNextLevel(Level);
+//        MeleeAttack = MeleeAttackEquation;
+//        PhysicalDefense = PhysicalDefenseEquation;
+//        Health = HealthEquation;
+//        CriticalChance = CriticalChanceEquation;
+//        MagicalAttack = MagicalAttackEquation;
+//        MagicalDefense = MagicalDefenseEquation;
+//        Manna = MannaEquation;
+//        Accuracy = AccuracyEquation;
+//        Initiative = InitiativeEquation;
+//        CastingRate = CastingRateEquation;
+//        Dodging = DodgingEquation;
+//        RangedAttack = RangedAttackEquation;
+//        CriticalModifier = CriticalModifierEquation;
+//        ExperiencePreviousLevel = GetExperienceNextLevel(Level);
+//        ExperienceNextLevel = GetExperienceNextLevel(Level);
         TemporaryHealth = Health;
     }
     

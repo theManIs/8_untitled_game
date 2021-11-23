@@ -19,7 +19,6 @@ public class HighlitingAccuracy : MonoBehaviour
     private LevelDissectorPlain _ldp;
     private AccuracyCounter _ac = new AccuracyCounter();
     private StaticMath _sMath = new StaticMath();
-    private float _realAccuracy = 0f;
 
     public void OnEnable()
     {
@@ -28,8 +27,8 @@ public class HighlitingAccuracy : MonoBehaviour
         _rtPool.SetCanonicalRect(accuracyCanvas);
 //        _cc = FindObjectOfType<ConstantConstraints>();
         _ldp = FindObjectOfType<LevelDissectorPlain>();
-//        Debug.Log(_ldp.GetLevelDissected(_cc.LevelBounds));
-        _ac = new AccuracyCounter{ Cells =  _ldp.GetLevelDissected(_ldp.LevelMins, _ldp.LevelBounds) };
+        //        Debug.Log(_ldp.GetLevelDissected(_cc.LevelBounds));
+        _ac = new AccuracyCounter { Cells = _ldp.GetLevelDissected(_ldp.LevelMins, _ldp.LevelBounds) };
 
         StartCoroutine(RecountAccuracyCounter());
     }
@@ -82,13 +81,9 @@ public class HighlitingAccuracy : MonoBehaviour
 
     }
 
-    public float CountAccuracy(MainCapsulePlayer activePlayer, MainCapsulePlayer capsule)
+    public float CountAccuracyInternal(MainCapsulePlayer activePlayer, MainCapsulePlayer capsule)
     {
-        float realAccuracy = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
-        realAccuracy -= activePlayer.InnateTraits.Accuracy / 100f;
-        capsule.TemporaryAccuracy = GetAccuracyPercentage(_realAccuracy);
-
-        return Convert.ToInt32((1 - realAccuracy) * 100);
+        return capsule.InnateTraits.CountAccuracy(capsule.CountObstacleAccuracy(activePlayer, capsule));
     }
 
     public void ChangeAccuracyRoutine()
@@ -108,27 +103,26 @@ public class HighlitingAccuracy : MonoBehaviour
 
             foreach (MainCapsulePlayer capsule in nonActivePlayers)
             {
-
 //                Debug.Log(activePlayer.playerSquare + " " + _sMath.CellCenterToPointXZ(activePlayer.playerSquare) + " " + _sMath.CellCenterToPointXZ(capsule.playerSquare));
                 float realDistance = capsule.InnateTraits.CountDistance(activePlayer.playerSquare, capsule.playerSquare);
 //                float realDistance = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
 //                float realDistance = _realAccuracy;
-                float showPercentage = CountAccuracy(activePlayer, capsule);
+                float showPercentage = CountAccuracyInternal(activePlayer, capsule);
 
 //                int showPercentage = Convert.ToInt32((1 - realDistance) * 100);
                 RectTransform can = _rtPool.Dequeue();
-                can.transform.SetParent(transform);
+//                can.transform.SetParent(transform);
                 can.transform.position = capsule.playerSquare + topShiftCoordinates;
 
                 TextMeshProUGUI tx = can.GetComponentInChildren<TextMeshProUGUI>();
-
+//                Debug.Log(capsule.name + " " + showPercentage.ToString("F0") + (showPercentage >= 100 ? "" : "%"));
 //                if (capsule.TemporaryHideAccuracy)
 //                {
 //                    can.gameObject.SetActive(false);
 //                }
 //                else
 //                {
-                    if (realDistance <= capsule.InnateTraits.WeaponRange && !capsule.TemporaryHideAccuracy && activePlayer.InnateTraits.IsEnemy(capsule.InnateTraits))
+                    if (activePlayer.InnateTraits.CheckDistance(activePlayer.playerSquare,capsule.playerSquare) && !capsule.TemporaryHideAccuracy && activePlayer.InnateTraits.IsEnemy(capsule.InnateTraits))
                     {
                         can.gameObject.SetActive(true);
                         tx.text = showPercentage.ToString("F0") + (showPercentage >= 100 ? "" : "%");
@@ -139,6 +133,8 @@ public class HighlitingAccuracy : MonoBehaviour
                     }
 //                }
             }
+
+            _rtPool.SetActive(false);
 
             _lastActivePlayer = activePlayer;
         } 

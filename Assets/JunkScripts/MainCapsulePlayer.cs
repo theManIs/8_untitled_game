@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class MainCapsulePlayer : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class MainCapsulePlayer : MonoBehaviour
     public Transform TransformToAnimate;
     public CharacterInnateTraits InnateTraits;
     public SkinnedMeshRenderer DefaultMaterial;
-    public float TemporaryAccuracy = 0;
+    public float TemporaryAccuracy;
     public bool TemporaryHideAccuracy = false;
     public GameObject FloatingText;
     public Transform ShotgunToAppear;
@@ -49,6 +50,9 @@ public class MainCapsulePlayer : MonoBehaviour
     private LevelDissectorPlain _ldp;
     private PathFinderByCells _pfc;
     private AnimateFuckingTrash _aft;
+    private AudioSource _asa;
+    private Vector2 _v2 = new Vector2();
+    private AccuracyCounter _ac;
 
     public void OnEnable()
     {
@@ -70,8 +74,10 @@ public class MainCapsulePlayer : MonoBehaviour
         _pfc = new PathFinderByCells { Ldap = _ldp, SMath = _smath, ColorSquareObject = _colorSquareInstance };
         PlayersAccomodation.AddPlayer(this);
         _aft = new AnimateFuckingTrash { A = GetComponentInChildren<Animator>() };
+        _asa = GetComponent<AudioSource>();
+        _ac = new AccuracyCounter { Cells = _ldp.GetLevelDissected(_ldp.LevelMins, _ldp.LevelBounds) };
 
-//        ShowRange();
+        //        ShowRange();
     }
 
     public void SetInnateTraits(CharacterInnateTraits cit)
@@ -97,17 +103,40 @@ public class MainCapsulePlayer : MonoBehaviour
         }
     }
 
+    public float CountObstacleAccuracy(MainCapsulePlayer activePlayer, MainCapsulePlayer capsule)
+    {
+        return Convert.ToInt32((1 - _ac.GetStraightLineAccuracy(_smath.CellCenterToPointXZ(activePlayer.playerSquare), _smath.CellCenterToPointXZ(capsule.playerSquare))) * 100);
+    }
+
     public void SetShotTo(MainCapsulePlayer mcpAggressor)
     {
+        FloatingText ft = Instantiate(FloatingText.GetComponent<FloatingText>(), transform.position, Quaternion.identity, transform);
+        int damage = 0;
 
-        GameObject go = Instantiate(FloatingText, transform.position, Quaternion.identity, transform);
-        go.GetComponentInChildren<TextMeshPro>().text = Convert.ToInt32(mcpAggressor.InnateTraits.BaseDamage).ToString();
+        if (!mcpAggressor.InnateTraits.DoHit(CountObstacleAccuracy(mcpAggressor, this)))
+        {
+            _v2.Set(1.75f, 1);
+            ft.SetText("miss!");
+            ft.SetWidth(_v2);
+        }
+        else if (mcpAggressor.InnateTraits.IsCriticalDamage())
+        {
+            _v2.Set(2.75f, 1);
+            damage = mcpAggressor.InnateTraits.GetCriticalDamage();
+            ft.SetText("crit! " + mcpAggressor.InnateTraits.GetCriticalDamage());
+            ft.SetWidth(_v2);
+        }
+        else
+        {
+            damage = mcpAggressor.InnateTraits.RangedAttack;
+            ft.SetText(Convert.ToInt32(mcpAggressor.InnateTraits.RangedAttack).ToString());
+        }
+
+        InnateTraits.TemporaryHealth -= damage;
         TemporaryHideAccuracy = true;
-        InnateTraits.TemporaryHealth -= (int)mcpAggressor.InnateTraits.BaseDamage;
 
-        AudioSource asa = gameObject.GetComponent<AudioSource>();
-        asa.clip = InnateTraits.ShotSound;
-        asa.Play();
+        _asa.clip = InnateTraits.ShotSound;
+        _asa.Play();
     }
 
     public IEnumerator GunRoutine(MainCapsulePlayer mcpAggressor)
@@ -128,7 +157,7 @@ public class MainCapsulePlayer : MonoBehaviour
 //        Debug.Log("hide it " + ShotgunToAppear.gameObject.activeSelf);
     }
 
-    void OnMouseDown()
+    public void OnMouseDown()
     {
         bool normalChange = true;
 
@@ -142,7 +171,6 @@ public class MainCapsulePlayer : MonoBehaviour
                 {
                     StartCoroutine(GunRoutine(mcp));
                 }
-//                Debug.Break();
             }
         }
 
