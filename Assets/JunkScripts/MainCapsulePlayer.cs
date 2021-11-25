@@ -21,6 +21,7 @@ public class MainCapsulePlayer : MonoBehaviour
     public bool TemporaryHideAccuracy = false;
     public GameObject FloatingText;
     public Transform ShotgunToAppear;
+    public float MouseLockTime = 2;
 
     //    private Color _defaultColor;
     private PlayerRequestOrder _playerRequestOrder;
@@ -53,6 +54,7 @@ public class MainCapsulePlayer : MonoBehaviour
     private AudioSource _asa;
     private Vector2 _v2 = new Vector2();
     private AccuracyCounter _ac;
+    private bool _mouseClickReleaseLock;
 
     public void OnEnable()
     {
@@ -157,41 +159,52 @@ public class MainCapsulePlayer : MonoBehaviour
 //        Debug.Log("hide it " + ShotgunToAppear.gameObject.activeSelf);
     }
 
+    public void MouseReleaseLock()
+    {
+        _mouseClickReleaseLock = false;
+    }
+
     public void OnMouseDown()
     {
-        bool normalChange = true;
-
-        foreach (MainCapsulePlayer mcp in PlayersAccomodation.ListOfPlayers)
+        if (!_mouseClickReleaseLock)
         {
-            if (mcp.ThisInstanceReady && mcp != this && InnateTraits.BaseColor != mcp.InnateTraits.BaseColor)
-            {
-                normalChange = false;
+            _mouseClickReleaseLock = true;
+            Invoke(nameof(MouseReleaseLock), MouseLockTime);
 
-                if (InnateTraits.CheckDistance(playerSquare, mcp.playerSquare))
+            bool normalChange = true;
+
+            foreach (MainCapsulePlayer mcp in PlayersAccomodation.ListOfPlayers)
+            {
+                if (mcp.ThisInstanceReady && mcp != this && InnateTraits.BaseColor != mcp.InnateTraits.BaseColor)
                 {
-                    StartCoroutine(GunRoutine(mcp));
+                    normalChange = false;
+
+                    if (InnateTraits.CheckDistance(playerSquare, mcp.playerSquare))
+                    {
+                        StartCoroutine(GunRoutine(mcp));
+                    }
                 }
             }
-        }
 
-        if (normalChange)
-        {
-            if (DefaultMaterial.material.color == InnateTraits.ActiveColor)
+            if (normalChange)
             {
-                InstanceCheckOut();
+                if (DefaultMaterial.material.color == InnateTraits.ActiveColor)
+                {
+                    InstanceCheckOut();
+                }
+                else
+                {
+                    CheckInInstance?.Invoke();
+
+                    DefaultMaterial.material.color = InnateTraits.ActiveColor;
+                    ThisInstanceReady = true;
+                    _playerRequestOrder.NewMove = false;
+
+                    _pfc.ShowRange(playerSquare, PlayersAccomodation.GetSquarePositions().ToArray());
+                }
+
+                AccuracyRecount?.Invoke();
             }
-            else
-            {
-                CheckInInstance?.Invoke();
-
-                DefaultMaterial.material.color = InnateTraits.ActiveColor;
-                ThisInstanceReady = true;
-                _playerRequestOrder.NewMove = false;
-
-                _pfc.ShowRange( playerSquare, PlayersAccomodation.GetSquarePositions().ToArray());
-            }
-
-            AccuracyRecount?.Invoke();
         }
     }
 

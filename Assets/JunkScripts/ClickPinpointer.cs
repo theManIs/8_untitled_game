@@ -14,22 +14,31 @@ public class ClickPinpointer : MonoBehaviour
 
     public void OnMouseDown()
     {
-        MeshRenderer cl = GetComponent<MeshRenderer>();
+//        MeshRenderer cl = GetComponent<MeshRenderer>();
 
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitinfo))
         {
-
-
+            bool moveAndClick = true;
 //            Debug.Log(hitinfo.point);
-
-//
             double x = Math.Ceiling(hitinfo.point.x);
             double z = Math.Ceiling(hitinfo.point.z);
 
             _pro.MoveToClick = new Vector3((float)(x - .5f), hitinfo.point.y, (float)(z - .5f));
-            _pro.NewMove = true;
-
+            
 //            Debug.Log($"{_pro.MoveToClick}");
+            foreach (MainCapsulePlayer mcp in PlayersAccomodation.ListOfPlayers)
+            {
+                if (mcp.playerSquare.x.Equals(_pro.MoveToClick.x) && mcp.playerSquare.z.Equals(_pro.MoveToClick.z))
+                {
+                    mcp.OnMouseDown();
+                    moveAndClick = false;
+                }
+            }
+
+            if (moveAndClick)
+            {
+                _pro.NewMove = true;
+            }
         }
 
     }
