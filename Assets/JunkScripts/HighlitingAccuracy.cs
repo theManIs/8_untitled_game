@@ -104,7 +104,7 @@ public class HighlitingAccuracy : MonoBehaviour
             foreach (MainCapsulePlayer capsule in nonActivePlayers)
             {
 //                Debug.Log(activePlayer.playerSquare + " " + _sMath.CellCenterToPointXZ(activePlayer.playerSquare) + " " + _sMath.CellCenterToPointXZ(capsule.playerSquare));
-                float realDistance = capsule.InnateTraits.CountDistance(activePlayer.playerSquare, capsule.playerSquare);
+//                float realDistance = capsule.InnateTraits.CountDistance(activePlayer.playerSquare, capsule.playerSquare);
 //                float realDistance = _ac.GetStraightLineAccuracy(_sMath.CellCenterToPointXZ(activePlayer.playerSquare), _sMath.CellCenterToPointXZ(capsule.playerSquare));
 //                float realDistance = _realAccuracy;
                 float showPercentage = CountAccuracyInternal(activePlayer, capsule);
@@ -115,6 +115,7 @@ public class HighlitingAccuracy : MonoBehaviour
                 can.transform.position = capsule.playerSquare + topShiftCoordinates;
 
                 TextMeshProUGUI tx = can.GetComponentInChildren<TextMeshProUGUI>();
+                HealthAndAccuracy ha = can.GetComponent<HealthAndAccuracy>();
 //                Debug.Log(capsule.name + " " + showPercentage.ToString("F0") + (showPercentage >= 100 ? "" : "%"));
 //                if (capsule.TemporaryHideAccuracy)
 //                {
@@ -125,7 +126,9 @@ public class HighlitingAccuracy : MonoBehaviour
                     if (activePlayer.InnateTraits.CheckDistance(activePlayer.playerSquare,capsule.playerSquare) && !capsule.TemporaryHideAccuracy && activePlayer.InnateTraits.IsEnemy(capsule.InnateTraits))
                     {
                         can.gameObject.SetActive(true);
+                        
                         tx.text = showPercentage.ToString("F0") + (showPercentage >= 100 ? "" : "%");
+                        ha.SetHealth(capsule.InnateTraits.TemporaryHealth, capsule.InnateTraits.Health);
                     }
                     else
                     {

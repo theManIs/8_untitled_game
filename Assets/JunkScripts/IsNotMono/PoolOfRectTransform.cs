@@ -50,7 +50,7 @@ public class PoolOfRectTransform
         }
         else
         {
-            RectTransform rt = Object.Instantiate(CanonicalRect, CanonicalRect.transform, true);
+            RectTransform rt = Object.Instantiate(CanonicalRect, CanonicalRect.transform.position, Quaternion.identity);
             
             _rtPool.Enqueue(rt);
             _shadowPool.Enqueue(rt);
