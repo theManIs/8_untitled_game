@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class HealthAndAccuracy : MonoBehaviour
 {
     public TextMeshProUGUI AccuracyText;
+    public TextMeshProUGUI HealthText;
     public Image BlackBarFill;
     public Image RedBarFill;
 
@@ -14,6 +15,7 @@ public class HealthAndAccuracy : MonoBehaviour
     public void SetHealth(int tmpHealth, int maxHealth)
     {
         RedBarFill.fillAmount = tmpHealth * 1f / maxHealth * 1f;
+        HealthText.text = $"{maxHealth}/{tmpHealth}";
     }
     public void SetAccuracy(string accuracy)
     {

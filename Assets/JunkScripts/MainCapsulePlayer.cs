@@ -166,11 +166,12 @@ public class MainCapsulePlayer : MonoBehaviour
 
     public void OnMouseDown()
     {
+//        Debug.Log(_mouseClickReleaseLock);
         if (!_mouseClickReleaseLock)
         {
             _mouseClickReleaseLock = true;
             Invoke(nameof(MouseReleaseLock), MouseLockTime);
-
+            
             bool normalChange = true;
 
             foreach (MainCapsulePlayer mcp in PlayersAccomodation.ListOfPlayers)
@@ -185,7 +186,7 @@ public class MainCapsulePlayer : MonoBehaviour
                     }
                 }
             }
-
+            
             if (normalChange)
             {
                 if (DefaultMaterial.material.color == InnateTraits.ActiveColor)
