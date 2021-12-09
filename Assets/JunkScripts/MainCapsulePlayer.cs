@@ -10,6 +10,7 @@ public class MainCapsulePlayer : MonoBehaviour
 {
     public event Action AccuracyRecount;
     public event Action CheckInInstance;
+    public event Action MovementHasEnded;
 
 //    public Transform OriginSquare;
     public Vector3 playerSquare;
@@ -80,6 +81,7 @@ public class MainCapsulePlayer : MonoBehaviour
         _ac = new AccuracyCounter { Cells = _ldp.GetLevelDissected(_ldp.LevelMins, _ldp.LevelBounds) };
 
         //        ShowRange();
+        MovementHasEnded += SubMovementAction;
     }
 
     public void SetInnateTraits(CharacterInnateTraits cit)
@@ -143,7 +145,6 @@ public class MainCapsulePlayer : MonoBehaviour
 
     public IEnumerator GunRoutine(MainCapsulePlayer mcpAggressor)
     {
-
         mcpAggressor.KickOne(this);
         yield return new WaitForSeconds(.4f);
         mcpAggressor.ShotgunToAppear.gameObject.SetActive(true);
@@ -157,6 +158,16 @@ public class MainCapsulePlayer : MonoBehaviour
         yield return new WaitForSeconds(.6f);
         mcpAggressor.ShotgunToAppear.gameObject.SetActive(false);
 //        Debug.Log("hide it " + ShotgunToAppear.gameObject.activeSelf);
+    }
+
+    public void SubMovementAction()
+    {
+        InnateTraits.SubAction(); 
+        
+        if (!InnateTraits.HasAction())
+        {
+            _pfc.HideRange();
+        }
     }
 
     public void MouseReleaseLock()
@@ -174,20 +185,21 @@ public class MainCapsulePlayer : MonoBehaviour
             
             bool normalChange = true;
 
-            foreach (MainCapsulePlayer mcp in PlayersAccomodation.ListOfPlayers)
+            foreach (MainCapsulePlayer shooter in PlayersAccomodation.ListOfPlayers)
             {
-                if (mcp.ThisInstanceReady && mcp != this && InnateTraits.BaseColor != mcp.InnateTraits.BaseColor)
+                if (shooter.ThisInstanceReady && shooter != this && InnateTraits.BaseColor != shooter.InnateTraits.BaseColor)
                 {
                     normalChange = false;
 
-                    if (InnateTraits.CheckDistance(playerSquare, mcp.playerSquare))
+                    if (InnateTraits.CheckDistance(playerSquare, shooter.playerSquare) && shooter.InnateTraits.HasAction())
                     {
-                        StartCoroutine(GunRoutine(mcp));
+                        shooter.SubMovementAction();
+                        StartCoroutine(GunRoutine(shooter));
                     }
                 }
             }
             
-            if (normalChange)
+            if (normalChange && InnateTraits.HasAction())
             {
                 if (DefaultMaterial.material.color == InnateTraits.ActiveColor)
                 {
@@ -256,7 +268,7 @@ public class MainCapsulePlayer : MonoBehaviour
 //            Debug.Log(transform.position.x + " " + transform.position.y + " " + transform.position.z);
 //        }
 
-        if (ThisInstanceReady && _playerRequestOrder.NewMove)
+        if (ThisInstanceReady && _playerRequestOrder.NewMove && InnateTraits.HasAction())
         {
             _playerRequestOrder.NewMove = false;
             Vector3 yPos = new Vector3(_playerRequestOrder.MoveToClick.x, _playerRequestOrder.MoveToClick.y + _meshBounds.extents.y, _playerRequestOrder.MoveToClick.z);
@@ -309,9 +321,10 @@ public class MainCapsulePlayer : MonoBehaviour
                 }
 
                 _aft.SetMoveState(false);
+                MovementHasEnded?.Invoke();
+                AccuracyRecount?.Invoke();
             }
 
-//            AccuracyRecount?.Invoke();
         }
 
         if (_moveToNextCell)

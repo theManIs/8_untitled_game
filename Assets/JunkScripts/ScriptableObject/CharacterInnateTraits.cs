@@ -7,6 +7,10 @@ using Random = UnityEngine.Random;
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/CharacterInnateTraits", order = 1)]
 public class CharacterInnateTraits : ScriptableObject
 {
+    [Header("Runtime Values")]
+    public int TemporaryHealth = 25;
+    public int RuntimeActionPoints = 0;
+
     [Header("Positioning")]
     public Vector3 PositionToInstantiate;
 
@@ -22,8 +26,8 @@ public class CharacterInnateTraits : ScriptableObject
     public Color ActiveColor = Color.green;
     public Color HoverColor = Color.cyan;
     public float BaseDamage = 15;
-    public int TemporaryHealth = 25;
     public AudioClip ShotSound;
+    public int ActionPoints = 2;
 
     [Header("Experience")]
     public int Experience = 1;
@@ -135,6 +139,21 @@ public class CharacterInnateTraits : ScriptableObject
         return accuracy + Accuracy;
     }
 
+    public void SubAction()
+    {
+//        Debug.Log("SubAction");
+        if (HasAction())
+        {
+//            Debug.Log("RuntimeActionPoints");
+            RuntimeActionPoints--;
+        }
+    }
+
+    public bool HasAction()
+    {
+        return RuntimeActionPoints > 0;
+    }
+
     public void Recount()
     {
 //        MeleeAttack = MeleeAttackEquation;
@@ -153,6 +172,7 @@ public class CharacterInnateTraits : ScriptableObject
 //        ExperiencePreviousLevel = GetExperienceNextLevel(Level);
 //        ExperienceNextLevel = GetExperienceNextLevel(Level);
         TemporaryHealth = Health;
+        RuntimeActionPoints = ActionPoints;
     }
     
 }

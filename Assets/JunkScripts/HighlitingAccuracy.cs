@@ -94,12 +94,25 @@ public class HighlitingAccuracy : MonoBehaviour
 
         _rtPool.RefreshQueue();
 
+        
+        
+
         if (_mainCapsulePlayers.Count(item => item.ThisInstanceReady) > 0)
         {
             MainCapsulePlayer activePlayer = _mainCapsulePlayers.First(item => item.ThisInstanceReady);
             Bounds bn = activePlayer.GetComponent<Collider>().bounds;
             Vector3 topShiftCoordinates = new Vector3(0, bn.size.y + accuracyCanvas.rect.height / 2, 0);
             MainCapsulePlayer[] nonActivePlayers = _mainCapsulePlayers.Where(item => !item.ThisInstanceReady).ToArray();
+
+            if (activePlayer)
+            {
+                RectTransform can = _rtPool.Dequeue();
+                can.transform.position = activePlayer.playerSquare + topShiftCoordinates;
+                HealthAndAccuracy ha = can.GetComponent<HealthAndAccuracy>();
+                ha.On(false);
+                ha.SetAction(activePlayer.InnateTraits.RuntimeActionPoints);
+                can.gameObject.SetActive(true);
+            }
 
             foreach (MainCapsulePlayer capsule in nonActivePlayers)
             {
@@ -117,7 +130,7 @@ public class HighlitingAccuracy : MonoBehaviour
 //                }
 //                else
 //                {
-                    if (activePlayer.InnateTraits.CheckDistance(activePlayer.playerSquare,capsule.playerSquare) && !capsule.TemporaryHideAccuracy && activePlayer.InnateTraits.IsEnemy(capsule.InnateTraits))
+                    if (activePlayer.InnateTraits.CheckDistance(activePlayer.playerSquare, capsule.playerSquare) && !capsule.TemporaryHideAccuracy && activePlayer.InnateTraits.IsEnemy(capsule.InnateTraits))
                     {
                         RectTransform can = _rtPool.Dequeue();
         //                can.transform.SetParent(transform);
@@ -125,11 +138,12 @@ public class HighlitingAccuracy : MonoBehaviour
 
 //                        TextMeshProUGUI tx = can.GetComponentInChildren<TextMeshProUGUI>();
                         HealthAndAccuracy ha = can.GetComponent<HealthAndAccuracy>();
-                            can.gameObject.SetActive(true);
+                        can.gameObject.SetActive(true);
                         
 //                        tx.text = showPercentage.ToString("F0") + (showPercentage >= 100 ? "" : "%");
                         ha.SetHealth(capsule.InnateTraits.TemporaryHealth, capsule.InnateTraits.Health);
                         ha.SetAccuracy(showPercentage.ToString("F0") + (showPercentage >= 100 ? "" : "%"));
+                        ha.On(true);
                     }
 //                    else
 //                    {
